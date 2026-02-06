@@ -430,6 +430,42 @@
         .canvas-textarea:focus { border-color: var(--text-sub); background: var(--tab-hover); }
         .canvas-panel[data-type="text"] { min-height: 240px; }
 
+        /* PROGRESS BAR */
+        .progress-bar { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+        .progress-track {
+            position: relative;
+            width: 100%;
+            height: 10px;
+            background: color-mix(in srgb, var(--input-bg), transparent 25%);
+            border: 1px solid var(--secondary);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, color-mix(in srgb, var(--secondary), #ffffff 20%), var(--secondary));
+            border-radius: 999px;
+            transition: width 0.25s ease;
+        }
+        .progress-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-sub);
+        }
+        .progress-meta.solo { justify-content: flex-end; }
+        .progress-value { color: var(--text-color); font-weight: 600; }
+        body.visual-depth-active .progress-track {
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7), 0 2px 6px rgba(0, 0, 0, 0.35);
+        }
+        body.visual-depth-active .progress-fill { filter: brightness(1.05); }
+        body.Glow-active .progress-track { box-shadow: 0 0 var(--glow-spread) var(--glow-color); }
+        body.Glow-active .progress-fill { box-shadow: 0 0 var(--glow-spread) var(--glow-color); }
+
 
         /* SCROLLABLE DROPDOWN FIXES */
         .dropdown-container { position: relative; width: 180px; font-size: 13px; }
@@ -1050,6 +1086,7 @@
                 UI_CONFIG[flag] = value;
                 applyTheme(); 
             }
+            updateProgressBars(flag, value);
 
             const payload = {};
             payload[flag] = value;
@@ -1112,8 +1149,7 @@
                             ]
                         },
                         { ui:'canvaspanel', panels:[
-                            { type:'text', well:'hhalf', header:'Status', role:'', flag:'', readOnly:true },
-                            { type:'text', well:'hhalf', header:'Changelog', role:'', flag:'', readOnly:true }
+                            { type:'text', well:'fill', header:'User Info', role:'', flag:'', readOnly:true },
                         ]},
                     ]},
                     {header:'Info',span:'hhalf',controls:[
@@ -1179,6 +1215,45 @@
             }
             updateBackend(flag, val);
         }
+        function normalizeProgressValue(rawValue, min, max) {
+            let lo = Number(min);
+            let hi = Number(max);
+            if (!Number.isFinite(lo)) lo = 0;
+            if (!Number.isFinite(hi)) hi = 100;
+            if (hi < lo) { const swap = lo; lo = hi; hi = swap; }
+            if (hi === lo) hi = lo + 1;
+            let value = Number(rawValue);
+            if (!Number.isFinite(value)) value = lo;
+            value = Math.min(Math.max(value, lo), hi);
+            const pct = ((value - lo) / (hi - lo)) * 100;
+            return { value, pct, min: lo, max: hi };
+        }
+        function formatProgressPercent(pct, precision) {
+            const p = Number.isFinite(precision) ? Math.max(0, precision) : 0;
+            return pct.toFixed(p);
+        }
+        function updateProgressBars(flag, value) {
+            if (!flag) return;
+            const nodes = document.querySelectorAll(`.progress-bar[data-progress-flag="${flag}"]`);
+            if (!nodes.length) return;
+            nodes.forEach(node => {
+                const min = Number(node.dataset.progressMin);
+                const max = Number(node.dataset.progressMax);
+                const precision = Number(node.dataset.progressPrecision);
+                const progress = normalizeProgressValue(value, min, max);
+                const fill = node.querySelector('.progress-fill');
+                if (fill) fill.style.width = `${progress.pct}%`;
+                const valueEl = node.querySelector('.progress-value');
+                if (valueEl) valueEl.textContent = `${formatProgressPercent(progress.pct, precision)}%`;
+            });
+        }
+        function resetThemeToDefault() {
+            Object.assign(UI_CONFIG, DEFAULT_UI_CONFIG);
+            applyTheme();
+            const activeTabKey = document.querySelector('.tab.active').getAttribute('data-tab');
+            document.getElementById('contentInject').innerHTML = buildPanel(activeTabKey);
+            document.title = "recv://" + JSON.stringify(DEFAULT_UI_CONFIG);
+        }
         function handleButtonClick(el, flag) {
             const type = el.dataset.type;
 
@@ -1190,11 +1265,7 @@
                     el.textContent = el.dataset.text;
                     
                     if (flag === 'ResetTheme') {
-                        Object.assign(UI_CONFIG, DEFAULT_UI_CONFIG);
-                        applyTheme();
-                        const activeTabKey = document.querySelector('.tab.active').getAttribute('data-tab');
-                        document.getElementById('contentInject').innerHTML = buildPanel(activeTabKey);
-                        document.title = "recv://" + JSON.stringify(DEFAULT_UI_CONFIG);
+                        resetThemeToDefault();
                         return;
                     }
                     if(flag) updateBackend(flag, true);
@@ -1211,11 +1282,7 @@
             } else {
                 // --- SINGLE CLICK ACTION ---
                 if (flag === 'ResetTheme') { // Handle single-click reset if type isn't double
-                     Object.assign(UI_CONFIG,DEFAULT_UI_CONFIG);
-                    applyTheme();
-                    const activeTabKey = document.querySelector('.tab.active').getAttribute('data-tab');
-                    document.getElementById('contentInject').innerHTML = buildPanel(activeTabKey);
-                    document.title = "recv://" + JSON.stringify(DEFAULT_UI_CONFIG);
+                    resetThemeToDefault();
                     return;
                 }
                 if(flag) {
@@ -1780,6 +1847,10 @@
             if (action) handlePanelAction(action, target);
             const flag = el.dataset.flag;
             if (!flag) return;
+            if (flag === 'ResetTheme') {
+                resetThemeToDefault();
+                return;
+            }
             let value = el.dataset.value;
             if (value === undefined) value = true;
             else if (value === 'true' || value === 'false') value = value === 'true';
@@ -1822,6 +1893,17 @@
                            oninput="updateSliderTooltip(this, '${ctrl.flag}')"
                            onmouseover="updateSliderTooltip(this, '${ctrl.flag}')">
                     <div class="slider-tooltip">${currentVal}</div>
+                </div>`;
+            }
+            else if (ui === 'progress') {
+                const progress = normalizeProgressValue(currentVal, ctrl.min ?? ctrl.Min, ctrl.max ?? ctrl.Max);
+                const precision = Number(ctrl.precision ?? ctrl.Precision);
+                const pctText = formatProgressPercent(progress.pct, precision);
+                const flagAttr = ctrl.flag ? ` data-progress-flag="${ctrl.flag}"` : '';
+                html += `
+                <div class="progress-bar"${flagAttr} data-progress-min="${progress.min}" data-progress-max="${progress.max}" data-progress-precision="${Number.isFinite(precision) ? Math.max(0, precision) : 0}">
+                    <div class="progress-track"><div class="progress-fill" style="width: ${progress.pct}%;"></div></div>
+                    <div class="progress-meta solo"><span class="progress-value">${pctText}%</span></div>
                 </div>`;
             }
             else if (ui === 'button') {
