@@ -1103,14 +1103,15 @@
             tab1: {
                 title: 'Dashboard',
                 grid: [
-                    {header:'Account',span:'vhalf',controls:[
+                    {header:'Placeholder',span:'hhalf',controls:[
                     ]},
-                    {header:'Changelog',span:'vhalf',controls:[
+                    {header:'Info',span:'hhalf',controls:[
+                        { ui:'canvaspanel', panels:[
+                            { type:'text', well:'hhalf', header:'Status', role:'', flag:'', readOnly:true },
+                            { type:'text', well:'hhalf', header:'Changelog', role:'', flag:'', readOnly:true }
+                        ]},
                     ]},
-                    {header:'Modules',span:'vhalf',controls:[
-                    ]},
-                    {header:'Status',span:'vhalf',controls:[
-                            { ui:'iconpanel',label:'Options',count:2,buttons: [{ icon:'<i class="fa-solid fa-check"></i>', tooltip:true, tooltipText:'Apply', tooltipDirection:'top', flag:'ApplyAction', value:'apply' },{ icon:'<i class="fa-solid fa-cloud-arrow-up"></i>',tooltip:true,tooltipText:'Open File',tooltipDirection:'top',flag:'Placeholder'}] }
+                    {header:'Modules',span:'fill',controls:[
                     ]},
                 ]
             },
