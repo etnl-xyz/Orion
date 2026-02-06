@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Status</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Jura:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg-color: #0a0a0a;
+        --panel-bg: #141414;
+        --border-color: #2a2a2a;
+        --text-color: #eaeaea;
+        --sub-text: #888;
+        --accent-color: #cc3333;
+        --font-family: 'Jura', sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        background: var(--bg-color);
+        color: var(--text-color);
+        font-family: var(--font-family);
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        user-select: none;
+    }
+    .container {
+        width: 100%;
+        max-width: 800px;
+        padding: 20px;
+        perspective: 1000px;
+    }
+    .status-panel {
+        background: var(--panel-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 40px 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        box-shadow: 0 0 40px rgba(0,0,0,0.5), inset 0 0 2px rgba(255,255,255,0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    .status-panel::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+        box-shadow: 0 0 15px var(--accent-color);
+        opacity: 0.8;
+    }
+    .icon-wrapper {
+        margin-bottom: 25px;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 80px;
+        width: 80px;
+    }
+    .status-icon {
+        font-size: 3.5rem;
+        color: var(--accent-color);
+        filter: drop-shadow(0 0 12px var(--accent-color));
+        transition: all 0.5s ease;
+    }
+    .status-title {
+        font-size: 1.6rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 6px;
+        margin-bottom: 8px;
+        color: var(--text-color);
+    }
+    .status-desc {
+        font-size: 0.9rem;
+        color: var(--sub-text);
+        margin-bottom: 35px;
+        letter-spacing: 1px;
+    }
+    .hash-container {
+        width: 100%;
+        background: #0f0f0f;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 16px;
+        margin-bottom: 35px;
+        position: relative;
+        cursor: pointer;
+        transition: 0.2s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .hash-container:hover {
+        background: #181818;
+        border-color: #444;
+    }
+    .hash-label {
+        position: absolute;
+        top: -9px;
+        background: var(--panel-bg);
+        padding: 0 12px;
+        font-size: 0.7rem;
+        color: var(--sub-text);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        transition: color 0.3s, border-color 0.3s;
+    }
+    .hash-code {
+        font-family: 'Consolas', 'Monaco', monospace;
+        font-size: 0.9rem;
+        color: var(--text-color);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        opacity: 0.9;
+        letter-spacing: 1px;
+    }
+    .controls {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+    .btn {
+        background: rgba(255,255,255,0.02);
+        border: 1px solid var(--border-color);
+        color: var(--sub-text);
+        padding: 12px 28px;
+        border-radius: 6px;
+        font-family: var(--font-family);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 130px;
+        margin: 0 10px;
+    }
+    .btn:hover {
+        border-color: var(--accent-color);
+        color: var(--text-color);
+        background: rgba(255,255,255,0.05);
+        box-shadow: 0 0 15px rgba(0,0,0,0.5), inset 0 0 10px rgba(255,255,255,0.02);
+        transform: translateY(-2px);
+    } 
+    .btn:active {
+        transform: translateY(0);
+    }
+</style>
+<script>
+    function sendCmd(cmd) {
+        document.title = "cmd://" + cmd;
+    }
+    function showCopyFeedback() {
+        const label = document.getElementById("hash-label");
+        const originalText = "UUID Hash";
+        
+        label.innerText = "COPIED TO CLIPBOARD";
+        label.style.color = "#fff";
+        label.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+        
+        setTimeout(() => {
+            label.innerText = originalText;
+            label.style.color = "";
+            label.style.borderColor = "";
+        }, 1500);
+    }
+    function copyToClipboard() {
+        var text = document.getElementById("client-hash").innerText;
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(function() {
+                showCopyFeedback();
+            }).catch(function(err) {
+                console.error('Clipboard API failed, falling back', err);
+            });
+            return;
+        }
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.setAttribute("readonly", "");
+        textArea.style.position = "fixed";
+        textArea.style.top = "-9999px";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showCopyFeedback();
+        } catch (err) {
+            console.error('Fallback copy failed', err);
+        }
+        document.body.removeChild(textArea);
+        window.getSelection().removeAllRanges();
+    }
+    window.onload = function() {
+        const reason = "%%REASON%%";
+        const canBackup = %%ALLOW_BACKUP%%;
+        const root = document.documentElement;
+        const iconContainer = document.getElementById('icon-wrapper');
+        const titleEl = document.getElementById('status-title');
+        const descEl = document.getElementById('status-desc');
+        titleEl.innerText = reason;
+        iconContainer.innerHTML = '';
+        if (reason.includes("Connection")) {
+            root.style.setProperty('--accent-color','#d4af37');
+            const i = document.createElement('i');
+            i.className = "fa-solid fa-link-slash status-icon";
+            iconContainer.appendChild(i);
+            descEl.innerText = "Unable To Establish Connection To Server.";
+        }   
+        else if (reason.includes("Dashboard") || reason.includes("Content")) {
+            root.style.setProperty('--accent-color', '#ff8800');
+            const i = document.createElement('i');
+            i.className = "fa-solid fa-eye-slash status-icon";
+            iconContainer.appendChild(i);
+            descEl.innerText = "Verification Passed, Server Content Failed To Load.";
+        }
+        else {
+             root.style.setProperty('--accent-color', '#cc3333');
+             const i = document.createElement('i');
+             i.className = "fa-solid fa-ban status-icon";
+             iconContainer.appendChild(i);
+             descEl.innerText = "Your Client Is Not Authorized For Access.";
+        }
+        if(canBackup) {
+            document.getElementById('btn-backup').style.display='block';
+        }
+    }
+</script>
+</head>
+<body>
+    <div class="container">
+        <div class="status-panel">
+            <div id="icon-wrapper" class="icon-wrapper">
+            </div>
+            <h1 id="status-title" class="status-title">STATUS</h1>
+            <p id="status-desc" class="status-desc">System Status Unknown</p>
+            <div class="hash-container" onclick="copyToClipboard()" title="">
+                <span id="hash-label" class="hash-label">UUID Hash</span>
+                <div id="client-hash" class="hash-code">%%CLIENT_HASH%%</div>
+            </div>
+            <div class="controls">
+                <button class="btn" onclick="sendCmd('exit')">Exit</button>
+                <button class="btn" onclick="sendCmd('retry')">Retry</button>
+                <button id="btn-backup" class="btn" style="display:none;" onclick="sendCmd('load_backup')">Load Backup</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
