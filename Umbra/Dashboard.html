@@ -10,11 +10,13 @@
         :root {
             /* Base Dynamic Variables */
             --font-family: 'Jura', sans-serif;
+            
             /* Core Colors */
             --bg-color: #0a0a0a;       /* Window Background */
             --primary: #101010;        /* Main Panel Color */
             --secondary: #333333;      /* Borders / Accents */
             --text-color: #eaeaea;
+            
             /* Derived / Calculated Variables (Set by JS) */
             --panel-bg: #222222;       /* = Primary */
             --sub-panel-bg: #202020;   /* = Primary + Lighten */
@@ -1079,7 +1081,6 @@
                 grid: [
                     {header:'Application',span:'fill',controls:[
                         { ui:'button', label:'Reset Application', type: 'double', text:'Reset', secondarytext: 'Confirm?', flag:'ResetApplication'},
-                        { ui:'dropdown', label:'Notification Position', type:'single', options: ["Top","Top Left","Top Right","Center","Bottom","Bottom Left","Bottom Right"], flag:'NotificationLocation'},
                     ]},
                     { header:'Theme',span:'hhalf',controls:[
                         { ui:'colorpicker', label:'Background Color', flag:'BackgroundColor'},
@@ -1096,6 +1097,7 @@
                         { ui:'button', label:'Reset Theme', type: 'double', text:'Reset', secondarytext: 'Confirm?', flag:'ResetTheme'},
                     ]},
                     {header:'Config',span:'hhalf',controls:[
+                        { ui:'dropdown', label:'Notification Position', type:'single', options: ["Top","Top Left","Top Right","Center","Bottom","Bottom Left","Bottom Right"], flag:'NotificationLocation'},
                     ]},
                 ]
             }
@@ -1653,5 +1655,3 @@
     
 </body>
 </html>
-
-
