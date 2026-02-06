@@ -1037,6 +1037,15 @@
                 title: 'Obfuscator',
                 grid: [
                     {header:'Base Config',span:'blob',controls:[
+                        { ui:'iconpanel',label:'Options',
+                            count:3,
+                            buttons: [
+                                { icon:'<i class="fa-solid fa-play"></i>',tooltip:true,tooltipText:'Run Obfuscation',tooltipDirection:'top',flag:''},
+                                { icon:'<i class="fa-solid fa-rotate"></i>',tooltip:true,tooltipText:'Reset All Options',tooltipDirection:'top',flag:''},
+                                { icon:'<i class="fa-regular fa-trash-can"></i>',tooltip:true,tooltipText:'Clear I/O',tooltipDirection:'top',flag:''},
+                            ]
+                        },
+                        { ui:'divider'},
                         { ui:'toggle', label:'String Encryption', flag:'string_encryption'}, 
                         { ui:'toggle', label:'AST Transformation', flag:'ast_transform'}, 
                         { ui:'toggle', label:'Function Splitting', flag:'function_splitting'},
@@ -1057,10 +1066,11 @@
                             buttons: [
                                 { icon:'<i class="fa-regular fa-clone"></i>',tooltip:true,tooltipText:'Copy',tooltipDirection:'top',flag:''},
                                 { icon:'<i class="fa-solid fa-file-import"></i>',tooltip:true,tooltipText:'Paste',tooltipDirection:'top',flag:''},
-                                { icon:'<i class="fa-solid fa-cloud-arrow-up"></i>',tooltip:true,tooltipText:'Open File',tooltipDirection:'top',flag:''},
+                                { icon:'<i class="fa-solid fa-cloud-arrow-down"></i>',tooltip:true,tooltipText:'Open File',tooltipDirection:'top',flag:''},
                                 { icon:'<i class="fa-regular fa-trash-can"></i>',tooltip:true,tooltipText:'Clear',tooltipDirection:'top',flag:''}
                             ]
                         },
+                        { ui:'divider'},
                         { ui:'divider'},
                     ]},
                     {header:'Output',span:'hhalf',controls:[
@@ -1068,10 +1078,11 @@
                             count:3,
                             buttons: [
                                 { icon:'<i class="fa-regular fa-clone"></i>',tooltip:true,tooltipText:'Copy',tooltipDirection:'top',flag:''},
-                                { icon:'<i class="fa-solid fa-cloud-arrow-down"></i>',tooltip:true,tooltipText:'Save File',tooltipDirection:'top',flag:'ResetApplication'},
+                                { icon:'<i class="fa-solid fa-cloud-arrow-up"></i>',tooltip:true,tooltipText:'Save File',tooltipDirection:'top',flag:'ResetApplication'},
                                 { icon:'<i class="fa-regular fa-trash-can"></i>',tooltip:true,tooltipText:'Clear',tooltipDirection:'top',flag:''}
                             ]
                         },
+                        { ui:'divider'},
                         { ui:'divider'},
                     ]},
                 ]
