@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orion</title>
+    <title>Umbra</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link id="dynamic-font" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jura&display=swap">
     <style>
@@ -649,7 +649,7 @@
         };
 
         const FONT_LIST = %%FONT_LIST%% || ["Jura", "Roboto", "Open Sans", "Montserrat", "Lato"];
-        const DEFAULT_UI_CONFIG = {"Font":"Jura","PrimaryColor":"#101010","SecondaryColor":"#252525","BackgroundColor":"#0a0a0a","TextColor":"#EAEAEA","GlowEnabled":false,"GlowColor":"#FFFFFF","GlowIntensity":1,"VisualDepthEnabled":false,"GlassmorphismEnabled":false,"NotificationLocation":"Top"};
+        const DEFAULT_UI_CONFIG = {"Font":"Jura","PrimaryColor":"#101010","SecondaryColor":"#252525","BackgroundColor":"#0a0a0a","TextColor":"#EAEAEA","GlowEnabled":false,"GlowColor":"#FFFFFF","GlowIntensity":1,"VisualDepthEnabled":false,"GlassmorphismEnabled":false};
 
         // --- NOTIFICATION SYSTEM (Python -> JS via window.__orionNotify) ---
         const __orionNotifyState = new Map();
@@ -1052,11 +1052,8 @@
                         { ui:'toggle', label:'Bytecode Manipulation', flag:'bytecode_manipulation'},
                     ]},
                     {header:'Input',span:'hhalf',controls:[
-                        { ui:'iconpanel',label:'Options',count:2,buttons: [{ icon:'<i class="fa-solid fa-check"></i>', tooltip:true, tooltipText:'Apply', tooltipDirection:'top', flag:'ApplyAction', value:'apply' },{ icon:'<i class="fa-solid fa-cloud-arrow-up"></i>',tooltip:true,tooltipText:'Open File',tooltipDirection:'top',flag:'Placeholder'}] }
                     ]},
                     {header:'Output',span:'hhalf',controls:[
-                        { ui:'iconpanel',label:'Options',count:2,buttons: [{ icon:'<i class="fa-solid fa-cloud-arrow-down"></i>', tooltip:true, tooltipText:'Apply', tooltipDirection:'top', flag:'ApplyAction', value:'apply' },{ icon:'<i class="fa-regular fa-folder-open"></i>',tooltip:true,tooltipText:'Open File',tooltipDirection:'top',flag:'Placeholder'}] }
-
                     ]},
                 ]
             },
@@ -1065,7 +1062,6 @@
                 grid: [
                     {header:'Application',span:'fill',controls:[
                         { ui:'button', label:'Reset Application', type: 'double', text:'Reset', secondarytext: 'Confirm?', flag:'ResetApplication'},
-                        { ui:'dropdown', label:'Notification Position', type:'single', options: ["Top","Top Left","Top Right","Center","Bottom","Bottom Left","Bottom Right"], flag:'NotificationLocation'},
                     ]},
                     { header:'Theme',span:'hhalf',controls:[
                         { ui:'colorpicker', label:'Background Color', flag:'BackgroundColor'},
@@ -1082,6 +1078,7 @@
                         { ui:'button', label:'Reset Theme', type: 'double', text:'Reset', secondarytext: 'Confirm?', flag:'ResetTheme'},
                     ]},
                     {header:'Config',span:'hhalf',controls:[
+                        { ui:'dropdown', label:'Notification Position', type:'single', options: ["Top","Top Left","Top Right","Center","Bottom","Bottom Left","Bottom Right"], flag:'NotificationLocation'},
                     ]},
                 ]
             }
@@ -1639,3 +1636,4 @@
     
 </body>
 </html>
+
