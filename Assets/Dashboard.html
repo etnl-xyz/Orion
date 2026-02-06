@@ -716,7 +716,7 @@
         };
 
         const FONT_LIST = %%FONT_LIST%% || ["Jura", "Roboto", "Open Sans", "Montserrat", "Lato"];
-        const DEFAULT_UI_CONFIG = {"Font":"Jura","PrimaryColor":"#101010","SecondaryColor":"#252525","BackgroundColor":"#0a0a0a","TextColor":"#EAEAEA","GlowEnabled":false,"GlowColor":"#FFFFFF","GlowIntensity":1,"VisualDepthEnabled":false,"GlassmorphismEnabled":false,"NotificationLocation":"Top"};
+        const DEFAULT_UI_CONFIG = {"Font":"Jura","PrimaryColor":"#101010","SecondaryColor":"#252525","BackgroundColor":"#0a0a0a","TextColor":"#EAEAEA","GlowEnabled":false,"GlowColor":"#FFFFFF","GlowIntensity":1,"VisualDepthEnabled":false,"GlassmorphismEnabled":false};
 
         // --- NOTIFICATION SYSTEM (Python -> JS via window.__orionNotify) ---
         const __orionNotifyState = new Map();
@@ -1103,7 +1103,18 @@
             tab1: {
                 title: 'Dashboard',
                 grid: [
-                    {header:'Placeholder',span:'hhalf',controls:[
+                    {header:'Quick Access',span:'hhalf',controls:[
+                        { ui:'iconpanel',label:'Options',
+                            count:2,
+                            buttons: [
+                                { icon:'<i class="fa-solid fa-arrow-rotate-left"></i>',tooltip:true,tooltipText:'Reset Theme',tooltipDirection:'top',flag:'ResetTheme'},
+                                { icon:'<i class="fa-regular fa-circle-xmark"></i>',tooltip:true,tooltipText:'Reset Application',tooltipDirection:'top',flag:'ResetApplication'},
+                            ]
+                        },
+                        { ui:'canvaspanel', panels:[
+                            { type:'text', well:'hhalf', header:'Status', role:'', flag:'', readOnly:true },
+                            { type:'text', well:'hhalf', header:'Changelog', role:'', flag:'', readOnly:true }
+                        ]},
                     ]},
                     {header:'Info',span:'hhalf',controls:[
                         { ui:'canvaspanel', panels:[
@@ -1120,7 +1131,6 @@
                 grid: [
                     {header:'Application',span:'fill',controls:[
                         { ui:'button', label:'Reset Application', type: 'double', text:'Reset', secondarytext: 'Confirm?', flag:'ResetApplication'},
-                        { ui:'dropdown', label:'Notification Position', type:'single', options: ["Top","Top Left","Top Right","Center","Bottom","Bottom Left","Bottom Right"], flag:'NotificationLocation'},
                     ]},
                     { header:'Theme',span:'hhalf',controls:[
                         { ui:'colorpicker', label:'Background Color', flag:'BackgroundColor'},
@@ -1137,6 +1147,7 @@
                         { ui:'button', label:'Reset Theme', type: 'double', text:'Reset', secondarytext: 'Confirm?', flag:'ResetTheme'},
                     ]},
                     {header:'Config',span:'hhalf',controls:[
+                        { ui:'dropdown', label:'Notification Position', type:'single', options: ["Top","Top Left","Top Right","Center","Bottom","Bottom Left","Bottom Right"], flag:'NotificationLocation'},
                     ]},
                 ]
             }
