@@ -26,6 +26,7 @@
             --glow-spread: 0px;
             --notify-edge: clamp(10px, 2.5vmin, 20px);
             --subpanel-vhalf: clamp(240px, 40vh, 460px);
+            --canvaspanel-vhalf: clamp(200px, 36vh, 440px);
         }
 
         * {
@@ -328,13 +329,16 @@
         body.visual-depth-active .content-panel.active:hover {
             transform: translateY(-2px);
         }
-
         body.visual-depth-active .sub-panel:hover {
             transform: translateY(-3px);
             background: var(--tab-hover);
             border-color: rgba(255, 255, 255, 0.08);
         }
-
+        body.visual-depth-active .canvas-panel:hover {
+            transform: translateY(-2px);
+            background: var(--tab-hover);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
         body.visual-depth-active .control-item:hover {
             transform: translateY(-2px);
             background: rgba(255, 255, 255, 0.04);
@@ -343,15 +347,19 @@
         body.Glow-active .content-panel:hover {
             box-shadow: 0 0 var(--glow-spread) var(--glow-color), 0 0 40px rgba(0, 0, 0, 0.4);
         }
-
         body.Glow-active .sub-panel:hover {
             box-shadow: 0 0 var(--glow-spread) var(--glow-color);
         }
-
+        body.Glow-active .canvas-panel:hover {
+            box-shadow: 0 0 var(--glow-spread) var(--glow-color);
+        }
         body.Glow-active .control-item:hover {
             box-shadow: 0 0 var(--glow-spread) var(--glow-color);
         }
-
+        body.Glow-active .canvas-tool-btn:hover {
+            box-shadow: 0 0 var(--glow-spread) var(--glow-color);
+            border-color: var(--glow-color) !important;
+        }
         body.Glow-active .button:hover,
         body.Glow-active .input:focus,
         body.Glow-active .dropdown-selected.active,
@@ -361,7 +369,6 @@
             box-shadow: 0 0 var(--glow-spread) var(--glow-color);
             border-color: var(--glow-color) !important;
         }
-
         body.Glow-active.visual-depth-active .sub-panel:hover {
             box-shadow: 0 0 var(--glow-spread) var(--glow-color);
         }
@@ -374,6 +381,8 @@
         body.Glassmorphism-active .button,
         body.Glassmorphism-active .icon-panel,
         body.Glassmorphism-active .icon-panel-btn,
+        body.Glassmorphism-active .canvas-panel,
+        body.Glassmorphism-active .canvas-tool-btn,
         body.Glassmorphism-active .dropdown-selected,
         body.Glassmorphism-active .dropdown-options,
         body.Glassmorphism-active .color-trigger,
@@ -383,17 +392,14 @@
             -webkit-backdrop-filter: blur(10px) saturate(160%) !important;
             border: 1px solid rgba(255, 255, 255, 0.08) !important;
         }
-
         body.Glassmorphism-active .tabview-container,
         body.Glassmorphism-active .content-panel,
         body.Glassmorphism-active .toggle-notch {
             background: color-mix(in srgb, var(--panel-bg), transparent 30%) !important;
         }
-
         body.Glassmorphism-active .sub-panel {
             background: color-mix(in srgb, var(--sub-panel-bg), transparent 30%) !important;
         }
-
         body.Glassmorphism-active .input,
         body.Glassmorphism-active .button,
         body.Glassmorphism-active .icon-panel,
@@ -402,22 +408,21 @@
         body.Glassmorphism-active .color-trigger {
             background: color-mix(in srgb, var(--input-bg), transparent 30%) !important;
         }
-
+        body.Glassmorphism-active .canvas-panel {
+            background: color-mix(in srgb, var(--sub-panel-bg), transparent 30%) !important;
+        }
         body.Glassmorphism-active .tab {
             background: color-mix(in srgb, var(--tab-bg), transparent 30%) !important;
         }
-
         body.Glassmorphism-active .tab.active,
         body.Glassmorphism-active .dropdown-option:hover,
         body.Glassmorphism-active .dropdown-option.selected {
             background: color-mix(in srgb, var(--tab-hover), transparent 30%) !important;
         }
-
         body.Glassmorphism-active .dropdown-options,
         body.Glassmorphism-active .color-popover {
             background: color-mix(in srgb, var(--tab-bg), transparent 10%) !important;
         }
-
         body.Glassmorphism-active .footer {
             background: transparent !important;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
@@ -490,11 +495,14 @@
             opacity: 1;
             transform: translateX(-50%) scale(1);
         }
+        .canvas-tool-btn.has-tooltip:hover > .ui-tooltip {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
 
         .ui-tooltip[data-dir="top"] {
             bottom: calc(100% + 8px);
         }
-
         .ui-tooltip[data-dir="top"]::before {
             content: '';
             position: absolute;
@@ -511,7 +519,6 @@
         .ui-tooltip[data-dir="bottom"] {
             top: calc(100% + 8px);
         }
-
         .ui-tooltip[data-dir="bottom"]::before {
             content: '';
             position: absolute;
@@ -720,6 +727,62 @@
         body.visual-depth-active .icon-panel-btn:hover {
             transform: translate(-50%, calc(-50% - 1px));
         }
+
+        .canvas-panel-group { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .canvas-group-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-sub); }
+        .canvas-grid { display: flex; flex-wrap: wrap; gap: 12px; width: 100%; align-content: flex-start; }
+        .canvas-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: color-mix(in srgb, var(--sub-panel-bg), transparent 8%);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            padding: 12px;
+            flex: 1 1 220px;
+            min-height: 160px;
+            position: relative;
+        }
+        .canvas-panel.fill { width: calc(100% - 2px); flex: 1 1 100%; }
+        .canvas-panel.hhalf { width: calc(50% - 6px); flex: 1 1 45%; }
+        .canvas-panel.vhalf { width: calc(50% - 6px); flex: 1 1 45%; min-height: var(--canvaspanel-vhalf); }
+        .canvas-panel.blob { flex: 1 1 240px; width: auto; }
+        .canvas-panel-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .canvas-panel-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-sub); }
+        .canvas-panel-tools { display: flex; align-items: center; gap: 8px; }
+        .canvas-tool-btn {
+            background: var(--input-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            width: 26px;
+            height: 26px;
+            display: grid;
+            place-items: center;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .canvas-tool-btn i { font-size: 0.95em; }
+        .canvas-tool-btn:hover { background: var(--tab-hover); border-color: var(--text-sub); }
+        .canvas-tool-btn:active { transform: scale(0.96); }
+        .canvas-panel-body { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .canvas-panel .control-item { width: 100%; }
+        .canvas-textarea {
+            flex: 1;
+            width: 100%;
+            min-height: 220px;
+            background: var(--input-bg);
+            border: 1px solid var(--secondary);
+            border-radius: 6px;
+            padding: 10px;
+            color: var(--text-color);
+            font-family: var(--font-family);
+            font-size: 12px;
+            resize: none;
+        }
+        .canvas-textarea:focus { border-color: var(--text-sub); background: var(--tab-hover); }
+        .canvas-panel[data-type="text"] { min-height: 240px; }
 
         .dropdown-container {
             position: relative;
@@ -1602,98 +1665,51 @@
         const TAB_DATA = {
             tab1: {
                 title: 'Protections',
-                grid: []
+                grid: [
+                    {header:'',span:'',controls:[
+                    ]},
+                ]
             },
             tab2: {
                 title: 'Scanners',
-                grid: []
+                grid: [
+                    {header:'',span:'',controls:[
+
+                    ]},
+                ]
             },
             tab3: {
                 title: 'Logs',
-                grid: []
+                grid: [
+                    {header:'',span:'',controls:[
+                        {ui: 'canvas'},
+                    ]},
+                ]
             },
             tab4: {
                 title: 'Settings',
-                grid: [{
-                    header: 'Application',
-                    span: 'fill',
-                    controls: [{
-                        ui: 'button',
-                        label: 'Reset Application',
-                        type: 'double',
-                        text: 'Reset',
-                        secondarytext: 'Confirm?',
-                        flag: 'ResetApplication'
-                    }, ]
-                }, {
-                    header: 'Theme',
-                    span: 'hhalf',
-                    controls: [{
-                        ui: 'colorpicker',
-                        label: 'Background Color',
-                        flag: 'BackgroundColor'
-                    }, {
-                        ui: 'colorpicker',
-                        label: 'Primary Color',
-                        flag: 'PrimaryColor'
-                    }, {
-                        ui: 'colorpicker',
-                        label: 'Accent Color',
-                        flag: 'SecondaryColor'
-                    }, {
-                        ui: 'colorpicker',
-                        label: 'Text Color',
-                        flag: 'TextColor'
-                    }, {
-                        ui: 'dropdown',
-                        label: 'UI Font',
-                        type: 'single',
-                        options: FONT_LIST,
-                        flag: 'Font'
-                    }, {
-                        ui: 'divider'
-                    }, {
-                        ui: 'toggle',
-                        label: 'UI Glassmorphism',
-                        flag: 'GlassmorphismEnabled'
-                    }, {
-                        ui: 'toggle',
-                        label: 'UI Depth Effects',
-                        flag: 'VisualDepthEnabled'
-                    }, {
-                        ui: 'toggle',
-                        label: 'UI Glow',
-                        flag: 'GlowEnabled'
-                    }, {
-                        ui: 'colorpicker',
-                        label: 'Glow Color',
-                        flag: 'GlowColor'
-                    }, {
-                        ui: 'slider',
-                        label: 'Glow Intensity',
-                        min: 0,
-                        max: 2.5,
-                        step: 0.1,
-                        flag: 'GlowIntensity'
-                    }, {
-                        ui: 'button',
-                        label: 'Reset Theme',
-                        type: 'double',
-                        text: 'Reset',
-                        secondarytext: 'Confirm?',
-                        flag: 'ResetTheme'
-                    }, ]
-                }, {
-                    header: 'Config',
-                    span: 'hhalf',
-                    controls: [{
-                        ui: 'dropdown',
-                        label: 'Notification Position',
-                        type: 'single',
-                        options: ["Top", "Top Left", "Top Right", "Center", "Bottom", "Bottom Left", "Bottom Right"],
-                        flag: 'NotificationLocation'
-                    }, ]
-                }, ]
+                grid: [
+                    {header: 'Application',span: 'fill',controls: [
+                        {ui: 'button',label: 'Reset Application',type: 'double',text: 'Reset',secondarytext: 'Confirm?',flag: 'ResetApplication'},
+                    ]}, 
+                    {header: 'Theme',span: 'hhalf',controls: [
+                        {ui: 'colorpicker',label: 'Background Color',flag: 'BackgroundColor'},
+                        {ui: 'colorpicker',label: 'Primary Color',flag: 'PrimaryColor'},
+                        {ui: 'colorpicker',label: 'Accent Color',flag: 'SecondaryColor'},
+                        {ui: 'colorpicker',label: 'Text Color',flag: 'TextColor'},
+                        {ui: 'dropdown',label: 'UI Font',type: 'single',options: FONT_LIST,flag: 'Font'},
+                        {ui: 'divider'},
+                        {ui: 'toggle',label: 'UI Glassmorphism',flag: 'GlassmorphismEnabled'},
+                        {ui: 'toggle',label: 'UI Depth Effects',flag: 'VisualDepthEnabled'},
+                        {ui: 'toggle',label: 'UI Glow',flag: 'GlowEnabled'},
+                        {ui: 'colorpicker',label: 'Glow Color',flag: 'GlowColor'},
+                        {ui: 'slider',label: 'Glow Intensity',min: 0,max: 2.5,step: 0.1,flag: 'GlowIntensity'},
+                        {ui: 'button',label: 'Reset Theme',type: 'double',text: 'Reset',secondarytext: 'Confirm?',flag: 'ResetTheme'},
+                    ]}, 
+                    {header: 'Config',span: 'hhalf',controls: [
+                        {ui: 'dropdown',label: 'Notification Position',type: 'single',options: ["Top", "Top Left", "Top Right", "Center", "Bottom", "Bottom Left", "Bottom Right"],flag: 'NotificationLocation'},
+                    ]},
+                ]
             },
         };
         let currentTabIndex = 0;
@@ -2076,6 +2092,9 @@
                 let tipDir = 'top';
                 let flag = '';
                 let value = '';
+                let action = '';
+                let target = '';
+
                 if (Array.isArray(btn)) {
                     icon = btn[0] ?? '';
                     tipEnabled = !!btn[1];
@@ -2088,15 +2107,16 @@
                     tipDir = btn.tooltipDirection ?? btn.TooltipDirection ?? 'top';
                     flag = btn.flag ?? btn.Flag ?? '';
                     value = btn.value ?? btn.Value ?? '';
+                    action = btn.action ?? btn.Action ?? btn.cmd ?? btn.Cmd ?? '';
+                    target = btn.target ?? btn.Target ?? btn.panel ?? btn.Panel ?? btn.canvas ?? btn.Canvas ?? '';
                 }
+
                 const dir = normalizeTooltipDirection(tipDir);
-                const tipCfg = tipEnabled ? {
-                    text: String(tipText ?? ''),
-                    dir
-                } : null;
+                const tipCfg = tipEnabled ? { text: String(tipText ?? ''), dir } : null;
                 const tipMarkup = tipCfg && tipCfg.text.trim().length > 0 ? tooltipHtml(tipCfg) : '';
                 const pos = finalCount > 0 ? ((idx + 1) / (finalCount + 1)) * 100 : 50;
                 const useFlag = flag || panelFlag;
+                const useTarget = target || ctrl.target || ctrl.Target || '';
                 let dataAttrs = `style="left: ${pos}%;"`;
                 if (useFlag) {
                     dataAttrs += ` data-flag="${useFlag}"`;
@@ -2105,10 +2125,192 @@
                         dataAttrs += ` data-value="${String(val)}"`;
                     }
                 }
+                if (action) dataAttrs += ` data-action="${String(action)}"`;
+                if (useTarget) dataAttrs += ` data-target="${String(useTarget)}"`;
+
                 html += `<button class="icon-panel-btn ${tipMarkup ? 'has-tooltip' : ''}" ${dataAttrs} onclick="handlePanelIconClick(this)">${icon}${tipMarkup}</button>`;
             });
             html += `</div>`;
             return html;
+        }
+        function normalizeCanvasShape(shape) {
+            const s = String(shape || 'fill').toLowerCase();
+            if (s === 'hhalf' || s === 'half' || s === 'h') return 'hhalf';
+            if (s === 'vhalf' || s === 'v') return 'vhalf';
+            if (s === 'blob' || s === 'auto') return 'blob';
+            return 'fill';
+        }
+        function buildCanvasToolbar(buttons, panelFlag, panelTarget) {
+            const list = tableToList(buttons);
+            if (!list.length) return '';
+            let html = `<div class="canvas-panel-tools">`;
+            list.forEach(btn => {
+                let icon = '';
+                let tipEnabled = false;
+                let tipText = '';
+                let tipDir = 'top';
+                let flag = '';
+                let value = '';
+                let action = '';
+                let target = '';
+
+                if (Array.isArray(btn)) {
+                    icon = btn[0] ?? '';
+                    tipEnabled = !!btn[1];
+                    tipText = btn[2] ?? '';
+                    tipDir = btn[3] ?? 'top';
+                } else if (btn && typeof btn === 'object') {
+                    icon = btn.icon ?? btn.Icon ?? '';
+                    tipEnabled = btn.tooltip ?? btn.Tooltip ?? false;
+                    tipText = btn.tooltipText ?? btn.TooltipText ?? '';
+                    tipDir = btn.tooltipDirection ?? btn.TooltipDirection ?? 'top';
+                    flag = btn.flag ?? btn.Flag ?? '';
+                    value = btn.value ?? btn.Value ?? '';
+                    action = btn.action ?? btn.Action ?? btn.cmd ?? btn.Cmd ?? '';
+                    target = btn.target ?? btn.Target ?? btn.panel ?? btn.Panel ?? btn.canvas ?? btn.Canvas ?? '';
+                }
+
+                const dir = normalizeTooltipDirection(tipDir);
+                const tipCfg = tipEnabled ? { text: String(tipText ?? ''), dir } : null;
+                const tipMarkup = tipCfg && tipCfg.text.trim().length > 0 ? tooltipHtml(tipCfg) : '';
+                const useFlag = flag || panelFlag;
+                const useTarget = target || panelTarget || '';
+                let dataAttrs = '';
+                if (useFlag) {
+                    dataAttrs += ` data-flag="${useFlag}"`;
+                    const val = value !== '' && value !== null && value !== undefined ? value : true;
+                    if (val !== '' && val !== null && val !== undefined) {
+                        dataAttrs += ` data-value="${String(val)}"`;
+                    }
+                }
+                if (action) dataAttrs += ` data-action="${String(action)}"`;
+                if (useTarget) dataAttrs += ` data-target="${String(useTarget)}"`;
+
+                html += `<button class="canvas-tool-btn ${tipMarkup ? 'has-tooltip' : ''}" ${dataAttrs} onclick="handlePanelIconClick(this)">${icon}${tipMarkup}</button>`;
+            });
+            html += `</div>`;
+            return html;
+        }
+        function buildCanvasWell(panel, parent) {
+            const type = String(panel.type ?? panel.Type ?? parent.type ?? parent.Type ?? 'text').toLowerCase();
+            const shape = normalizeCanvasShape(panel.shape ?? panel.Shape ?? panel.well ?? panel.Well ?? panel.span ?? panel.Span ?? 'fill');
+            const title = panel.header ?? panel.title ?? panel.label ?? '';
+            const flag = panel.flag ?? panel.Flag ?? parent.flag ?? parent.Flag ?? '';
+            const panelId = panel.id ?? panel.Id ?? panel.key ?? panel.Key ?? '';
+            const panelRole = panel.role ?? panel.Role ?? panelId ?? '';
+            const placeholder = panel.placeholder ?? panel.Placeholder ?? '';
+            const readOnly = panel.readonly ?? panel.readOnly ?? panel.ReadOnly ?? false;
+            const buttons = panel.buttons ?? panel.Buttons ?? panel.tools ?? panel.Tools ?? [];
+
+            if (flag) {
+                ensureServerFlag(flag, panel.value ?? panel.Value ?? '');
+            }
+
+            let currentVal = '';
+            if (flag) {
+                currentVal = SERVER_CONFIG[flag];
+                if (currentVal === undefined) currentVal = UI_CONFIG[flag];
+            }
+            if (currentVal === undefined || currentVal === null) {
+                currentVal = panel.value ?? panel.Value ?? '';
+            }
+
+            let html = `<div class="canvas-panel ${shape}" data-type="${type}"`;
+            if (panelId) html += ` data-canvas-id="${panelId}"`;
+            if (panelRole) html += ` data-canvas-role="${panelRole}"`;
+            html += `>`;
+
+            if (title || buttons.length) {
+                html += `<div class="canvas-panel-header">`;
+                html += `<div class="canvas-panel-title">${title || ''}</div>`;
+                if (buttons.length) html += buildCanvasToolbar(buttons, flag, panelRole || panelId);
+                html += `</div>`;
+            }
+
+            if (type === 'control') {
+                html += `<div class="canvas-panel-body">`;
+                const controls = tableToList(panel.controls ?? panel.Controls ?? panel.items ?? panel.Items ?? []);
+                controls.forEach(ctrl => {
+                    html += buildControl(ctrl);
+                });
+                html += `</div>`;
+            } else {
+                const safeVal = escapeHtml(currentVal);
+                const roAttr = readOnly ? ' readonly' : '';
+                let dataAttrs = '';
+                if (flag) dataAttrs += ` data-flag="${flag}"`;
+                if (panelRole) dataAttrs += ` data-canvas-role="${panelRole}" data-role="${panelRole}"`;
+                if (panelId) dataAttrs += ` data-canvas-id="${panelId}"`;
+                html += `<textarea class="canvas-textarea"${dataAttrs}${roAttr} placeholder="${escapeHtml(placeholder)}" oninput="handleCanvasTextInput(this)">${safeVal}</textarea>`;
+            }
+
+            html += `</div>`;
+            return html;
+        }
+        function buildCanvasPanel(ctrl) {
+            const list = tableToList(ctrl.panels ?? ctrl.Panels ?? ctrl.items ?? ctrl.Items ?? ctrl.canvas ?? ctrl.Canvas ?? []);
+            const panels = list.length ? list : [ctrl];
+            let html = `<div class="canvas-panel-group">`;
+            const groupLabel = ctrl.label ?? ctrl.Label ?? '';
+            if (groupLabel && panels.length > 1) {
+                html += `<div class="canvas-group-label">${groupLabel}</div>`;
+            }
+            html += `<div class="canvas-grid">`;
+            panels.forEach(panel => {
+                html += buildCanvasWell(panel, ctrl);
+            });
+            html += `</div></div>`;
+            return html;
+        }
+        function handleCanvasTextInput(el) {
+            const flag = el.dataset.flag;
+            if (!flag) return;
+            const value = el.value;
+            if (el._debounceTimer) clearTimeout(el._debounceTimer);
+            el._debounceTimer = setTimeout(() => {
+                updateBackend(flag, value);
+            }, 150);
+        }
+        function findCanvasTextareas(target) {
+            if (!target) return Array.from(document.querySelectorAll('.canvas-textarea'));
+            return Array.from(document.querySelectorAll(
+                `.canvas-textarea[data-canvas-role="${target}"], .canvas-textarea[data-canvas-id="${target}"], .canvas-textarea[data-role="${target}"]`
+            ));
+        }
+        function clearCanvasByTarget(target) {
+            const nodes = findCanvasTextareas(target);
+            nodes.forEach(el => {
+                el.value = '';
+                const flag = el.dataset.flag;
+                if (flag) updateBackend(flag, '');
+            });
+        }
+        function copyCanvasByTarget(target) {
+            const nodes = findCanvasTextareas(target);
+            if (!nodes.length) return;
+            const el = nodes[0];
+            const text = el.value || '';
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).catch(() => {});
+                return;
+            }
+            try {
+                el.select();
+                document.execCommand('copy');
+                el.setSelectionRange(text.length, text.length);
+            } catch {}
+        }
+        function pasteCanvasByTarget(target) {
+            const nodes = findCanvasTextareas(target);
+            if (!nodes.length) return;
+            const el = nodes[0];
+            if (navigator.clipboard && navigator.clipboard.readText) {
+                navigator.clipboard.readText().then(text => {
+                    el.value = text;
+                    const flag = el.dataset.flag;
+                    if (flag) updateBackend(flag, text);
+                }).catch(() => {});
+            }
         }
 
         function handlePanelIconClick(el) {
@@ -2120,7 +2322,104 @@
             else if (value !== '' && !isNaN(value)) value = Number(value);
             updateBackend(flag, value);
         }
+        function buildControl(ctrl) {
+            if (!ctrl || !ctrl.ui) return '';
+            const ui = String(ctrl.ui).toLowerCase();
 
+            if (ui === 'divider') {
+                return `<div class="divider"></div>`;
+            }
+            if (ui === 'canvaspanel' || ui === 'canvas-panel' || ui === 'canvas') {
+                return buildCanvasPanel(ctrl);
+            }
+
+            const tip = getTooltipConfig(ctrl);
+            const tipMarkup = tooltipHtml(tip);
+            const controlClass = tipMarkup ? 'control-item has-tooltip' : 'control-item';
+            const labelText = ctrl.label ?? '';
+            let html = `<div class="${controlClass}"><label>${labelText}</label>`;
+
+            let currentVal = SERVER_CONFIG[ctrl.flag];
+            if (currentVal === undefined) currentVal = UI_CONFIG[ctrl.flag];
+            if (currentVal === undefined) currentVal = "";
+
+            if (ui === 'toggle') {
+                const flagAttr = ctrl.flag ? ` data-flag="${ctrl.flag}"` : '';
+                html += `<div class="switch ${currentVal?'on':''}"${flagAttr} onclick="handleToggleClick(this, '${ctrl.flag}')"></div>`;
+            }
+            else if (ui === 'input') {
+                html += `<input class="input" type="text" value="${currentVal}" oninput="validateInput(this, '${ctrl.type}', '${ctrl.flag}')">`;
+            }
+            else if (ui === 'slider') {
+                html += `
+                <div class="slider-wrapper">
+                    <input type="range" 
+                           min="${ctrl.min}" max="${ctrl.max}" step="${ctrl.step}" value="${currentVal}"
+                           oninput="updateSliderTooltip(this, '${ctrl.flag}')"
+                           onmouseover="updateSliderTooltip(this, '${ctrl.flag}')">
+                    <div class="slider-tooltip">${currentVal}</div>
+                </div>`;
+            }
+            else if (ui === 'progress') {
+                const progress = normalizeProgressValue(currentVal, ctrl.min ?? ctrl.Min, ctrl.max ?? ctrl.Max);
+                const precision = Number(ctrl.precision ?? ctrl.Precision);
+                const pctText = formatProgressPercent(progress.pct, precision);
+                const flagAttr = ctrl.flag ? ` data-progress-flag="${ctrl.flag}"` : '';
+                html += `
+                <div class="progress-bar"${flagAttr} data-progress-min="${progress.min}" data-progress-max="${progress.max}" data-progress-precision="${Number.isFinite(precision) ? Math.max(0, precision) : 0}">
+                    <div class="progress-track"><div class="progress-fill" style="width: ${progress.pct}%;"></div></div>
+                    <div class="progress-meta solo"><span class="progress-value">${pctText}%</span></div>
+                </div>`;
+            }
+            else if (ui === 'button') {
+                const type = ctrl.type || 'single';
+                html += `<button class="button" 
+                                data-type="${type}" 
+                                data-text="${ctrl.text || 'Action'}" 
+                                data-secondarytext="${ctrl.secondarytext || ''}"
+                                onclick="handleButtonClick(this, '${ctrl.flag || ''}')">${ctrl.text || 'Action'}</button>`;
+            }
+            else if (ui === 'panel' || ui === 'iconpanel') {
+                html += buildIconPanel(ctrl);
+            }
+            else if (ui === 'dropdown') {
+                const isArr = Array.isArray(currentVal);
+                const optionsHtml = ctrl.options.map(opt => {
+                    const isSelected = isArr ? currentVal.includes(opt) : opt === currentVal;
+                    return `<div class="dropdown-option ${isSelected ? 'selected' : ''}" onclick="selectOption(this, '${opt}')">${opt}</div>`;
+                }).join('');
+                html += `
+                <div class="dropdown-container" data-type="${ctrl.type}" data-flag="${ctrl.flag}">
+                    <div class="dropdown-selected" onclick="toggleDropdown(this)">
+                        <span onwheel="handleDropdownScroll(event, this)">${isArr ? (currentVal.length?currentVal.join(', '):'None') : currentVal}</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="dropdown-options">${optionsHtml}</div>
+                </div>`;
+            }
+            else if (ui === 'colorpicker') {
+                html += `
+                <div class="color-container" data-h="0" data-s="1" data-v="1" data-flag="${ctrl.flag}">
+                    <div class="color-trigger" onclick="toggleColorPicker(this)">
+                        <div class="color-preview" style="background: ${currentVal}"></div>
+                    </div>
+                    <div class="color-popover">
+                        <div class="color-field">
+                            <div class="color-cursor"></div>
+                        </div>
+                        <div class="color-hue-rail">
+                            <div class="color-hue-thumb"></div>
+                        </div>
+                        <div class="color-input-wrapper">
+                            <span class="color-hash">#</span>
+                            <input type="text" class="color-hex-input" value="${currentVal.replace('#','')}" oninput="updateColorFromInput(this)">
+                        </div>
+                    </div>
+                </div>`;
+            }
+            html += `${tipMarkup}</div>`;
+            return html;
+        }
         function buildPanel(key) {
             const data = TAB_DATA[key];
             let html = `<h2 class="panel-title">${data.title}</h2>`;
