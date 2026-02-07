@@ -1197,17 +1197,8 @@
         </div>
     </div>
     <script>
-        const SERVER_CONFIG = %%CLIENT_DATA %% || {
-            "ToggleTest": false,
-            "SliderTest": 50,
-            "InputTest1": "Default",
-            "InputTest2": "Default",
-            "InputTest3": "Default",
-            "DropdownTest1": [],
-            "DropdownTest2": [],
-            "ColorpickerTest": "#FFFFFF"
-        };
-        const UI_CONFIG = %%UI_DATA %% || {
+        
+        const UI_CONFIG = %%UI_DATA%% || {
             "Font": "Jura",
             "PrimaryColor": "#101010",
             "SecondaryColor": "#252525",
@@ -1220,7 +1211,7 @@
             "GlassmorphismEnabled": false,
             "NotificationLocation": "Top"
         };
-        const FONT_LIST = %%FONT_LIST %% || ["Jura", "Roboto", "Open Sans", "Montserrat", "Lato"];
+        const FONT_LIST = %%FONT_LIST%% || ["Jura", "Roboto", "Open Sans", "Montserrat", "Lato"];
         const DEFAULT_UI_CONFIG = {
             "Font": "Jura",
             "PrimaryColor": "#101010",
@@ -1551,9 +1542,7 @@
         }
 
         function updateBackend(flag, value) {
-            if (flag in SERVER_CONFIG) {
-                SERVER_CONFIG[flag] = value;
-            } else if (flag in UI_CONFIG) {
+            if (flag in UI_CONFIG) {
                 UI_CONFIG[flag] = value;
                 applyTheme();
             }
@@ -2130,8 +2119,7 @@
                     const tipMarkup = tooltipHtml(tip);
                     const controlClass = tipMarkup ? 'control-item has-tooltip' : 'control-item';
                     html += `<div class="${controlClass}"><label>${ctrl.label}</label>`;
-                    let currentVal = SERVER_CONFIG[ctrl.flag];
-                    if (currentVal === undefined) currentVal = UI_CONFIG[ctrl.flag];
+                    let currentVal = UI_CONFIG[ctrl.flag];
                     if (currentVal === undefined) currentVal = "";
                     if (ctrl.ui === 'toggle') {
                         html += `<div class="switch ${currentVal?'on':''}" onclick="handleToggleClick(this, '${ctrl.flag}')"></div>`;
@@ -2141,9 +2129,9 @@
                         html += `
                         <div class="slider-wrapper">
                             <input type="range"
-                                   min="${ctrl.min}" max="${ctrl.max}" step="${ctrl.step}" value="${currentVal}"
-                                   oninput="updateSliderTooltip(this, '${ctrl.flag}')"
-                                   onmouseover="updateSliderTooltip(this, '${ctrl.flag}')">
+                                min="${ctrl.min}" max="${ctrl.max}" step="${ctrl.step}" value="${currentVal}"
+                                oninput="updateSliderTooltip(this, '${ctrl.flag}')"
+                                onmouseover="updateSliderTooltip(this, '${ctrl.flag}')">
                             <div class="slider-tooltip">${currentVal}</div>
                         </div>`;
                     } else if (ctrl.ui === 'button') {
