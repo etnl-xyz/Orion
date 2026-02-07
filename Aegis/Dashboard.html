@@ -1662,13 +1662,16 @@
                 __orionPositionNotifyStack();
             } catch {}
         }
-        const TAB_DATA = {
+            const TAB_DATA = {
             tab1: {
                 title: 'Protections',
                 grid: [
-                    {header:'Placeholder',span:'fill',controls:[
+                    {header:'Quick Access',span:'fill',controls:[
+                        { ui:'canvaspanel', panels:[
+                            { type:'control',well:'fill',header:'Changelog'}
+                        ]},
                     ]},
-                    {header:'Placeholder',span:'hhalf',controls:[
+                    {header:'Real Time Protections',span:'hhalf',controls:[
                     ]},
                     {header:'Placeholder',span:'hhalf',controls:[
                     ]},
@@ -1686,7 +1689,22 @@
             tab3: {
                 title: 'Logs',
                 grid: [
-                    {header:'Placeholder',span:'fill',controls:[
+                    {header:'System Logs',span:'fill',controls:[
+                        { ui:'canvaspanel', panels:[
+                            { type:'control',well:'fill',header:'Event Log',
+                                controls: [
+                                    {
+                                        ui: 'canvaspanel',panels: [
+                                            {type: 'text',well: 'fill',header: 'Log Output',readonly: true,placeholder: 'Log entries will appear here...',buttons: [
+                                                    { icon: '<i class="fa-solid fa-copy"></i>', action: 'copy', target: 'logOutput', tooltip: true, tooltipText: 'Copy Logs' },
+                                                    { icon: '<i class="fa-solid fa-trash"></i>', action: 'clear', target: 'logOutput', tooltip: true, tooltipText: 'Clear Logs' }
+                                                ],id:'logOutput'
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]},
                     ]},
                 ]
             },
