@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aegis</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
     <link id="dynamic-font" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jura&display=swap">
     <style>
         :root {
@@ -1177,10 +1178,14 @@
     <div class="tabview-container" id="tabview">
         <div class="tabs" id="tabs">
             <div class="tab active" data-tab="tab1">
-                <i class="fa-solid fa-id-card"></i>
-                <span class="tooltip">Dashboard</span>
+                <i class="fa-solid fa-shield-virus"></i>
+                <span class="tooltip">Protections</span>
             </div>
             <div class="tab" data-tab="tab2">
+                <i class="ph ph-broom"></i>
+                <span class="tooltip">Cleaner</span>
+            </div>
+            <div class="tab" data-tab="tab3">
                 <i class="fa-solid fa-user-gear"></i>
                 <span class="tooltip">Settings</span>
             </div>
@@ -1592,10 +1597,14 @@
         }
         const TAB_DATA = {
             tab1: {
-                title: 'Dashboard',
+                title: 'Protections',
                 grid: []
             },
             tab2: {
+                title: 'Cleaner',
+                grid: []
+            },
+            tab3: {
                 title: 'Settings',
                 grid: [{
                     header: 'Application',
@@ -1677,7 +1686,7 @@
                         flag: 'NotificationLocation'
                     }, ]
                 }, ]
-            }
+            },
         };
         let currentTabIndex = 0;
         let isDraggingColor = false;
