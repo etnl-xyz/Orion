@@ -430,6 +430,42 @@
         .canvas-textarea:focus { border-color: var(--text-sub); background: var(--tab-hover); }
         .canvas-panel[data-type="text"] { min-height: 240px; }
 
+        /* PROGRESS BAR */
+        .progress-bar { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+        .progress-track {
+            position: relative;
+            width: 100%;
+            height: 10px;
+            background: color-mix(in srgb, var(--input-bg), transparent 25%);
+            border: 1px solid var(--secondary);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, color-mix(in srgb, var(--secondary), #ffffff 20%), var(--secondary));
+            border-radius: 999px;
+            transition: width 0.25s ease;
+        }
+        .progress-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-sub);
+        }
+        .progress-meta.solo { justify-content: flex-end; }
+        .progress-value { color: var(--text-color); font-weight: 600; }
+        body.visual-depth-active .progress-track {
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7), 0 2px 6px rgba(0, 0, 0, 0.35);
+        }
+        body.visual-depth-active .progress-fill { filter: brightness(1.05); }
+        body.Glow-active .progress-track { box-shadow: 0 0 var(--glow-spread) var(--glow-color); }
+        body.Glow-active .progress-fill { box-shadow: 0 0 var(--glow-spread) var(--glow-color); }
+
 
         /* SCROLLABLE DROPDOWN FIXES */
         .dropdown-container { position: relative; width: 180px; font-size: 13px; }
@@ -702,8 +738,14 @@
             "vme": false,
             "dynamic_codegen": false,
             "identifier_renaming": false,
+            "function_renaming": false,
             "bytecode_manipulation": false,
-            "function_splitting": false
+            "function_splitting": false,
+            "minification": false,
+            "beautify": false,
+            "oneline_output": false,
+            "umbra_banner": false,
+            "language": "PY"
         };
 
         const UI_CONFIG = %%UI_DATA%% || {
@@ -1053,6 +1095,7 @@
                 UI_CONFIG[flag] = value;
                 applyTheme(); 
             }
+            updateProgressBars(flag, value);
 
             const payload = {};
             payload[flag] = value;
@@ -1116,74 +1159,58 @@
                             ]
                         },
                         { ui:'divider'},
+                        { ui:'toggle', label:'Umbra Banner', flag:'umbra_banner'}, 
+                        { ui:'toggle', label:'Minify', flag:'minification'}, 
+                        { ui:'toggle', label:'Beautify', flag:'beautify'}, 
+                        { ui:'toggle', label:'Oneline Output', flag:'oneline_output'}, 
                         { ui:'toggle', label:'String Encryption', flag:'string_encryption'}, 
                         { ui:'toggle', label:'AST Transformation', flag:'ast_transform'}, 
                         { ui:'toggle', label:'Function Splitting', flag:'function_splitting'},
-                        { ui:'toggle', label:'Dead Code Insertion', flag:'dead_code'}, 
                         { ui:'toggle', label:'Identifier Renaming', flag:'identifier_renaming'}, 
+                        { ui:'toggle', label:'Function Renaming', flag:'function_renaming'},
+                        { ui:'toggle', label:'Dead Code Insertion', flag:'dead_code'}, 
                         { ui:'toggle', label:'Control Flow Flattening', flag:'control_flow_flatten'}, 
+                        { ui:'toggle', label:'Opcode Substitution', flag:'opcode_substitution'},
+                        { ui:'toggle', label:'Runtime ENV Checks', flag:'runtime_env_checks'},
                     ]},
                     {header:'Advanced Options',span:'blob',controls:[
                         { ui:'toggle', label:'VME', flag:'vme'},
                         { ui:'toggle', label:'Dynamic Codegen', flag:'dynamic_codegen'},
-                        { ui:'toggle', label:'Runtime ENV Checks', flag:'runtime_env_checks'},
-                        { ui:'toggle', label:'Opcode Substitution', flag:'opcode_substitution'},
                         { ui:'toggle', label:'Bytecode Manipulation', flag:'bytecode_manipulation'},
                     ]},
                     {header:'Input',span:'hhalf',controls:[
-
                         { ui:'iconpanel',label:'Options',
-
                             count:4,
-
                             buttons: [
-
-                                { icon:'<i class="fa-regular fa-clone"></i>',tooltip:true,tooltipText:'Copy',tooltipDirection:'top',flag:'input_copy',action:'copy_canvas',target:'input'},
-
-                                { icon:'<i class="fa-solid fa-file-import"></i>',tooltip:true,tooltipText:'Paste',tooltipDirection:'top',flag:'input_paste',action:'paste_canvas',target:'input'},
-
-                                { icon:'<i class="fa-solid fa-cloud-arrow-down"></i>',tooltip:true,tooltipText:'Open File',tooltipDirection:'top',flag:'input_open'},
-
+                                { icon:'<i class="fa-regular fa-clone"></i>',tooltip:true,tooltipText:'Copy',tooltipDirection:'top',flag:'CopyToClipboard',value:'input'},
+                                { icon:'<i class="fa-solid fa-file-import"></i>',tooltip:true,tooltipText:'Paste',tooltipDirection:'top',flag:'PasteFromClipboard',value:'input'},
+                                { icon:'<i class="fa-solid fa-cloud-arrow-down"></i>',tooltip:true,tooltipText:'Open File',tooltipDirection:'top',flag:'OpenFile',value:'input'},
                                 { icon:'<i class="fa-regular fa-trash-can"></i>',tooltip:true,tooltipText:'Clear',tooltipDirection:'top',flag:'input_clear',action:'clear_canvas',target:'input'}
 
                             ]
 
                         },
-
+                        { ui:'dropdown', label:'Language', type:'single', options: ["PY","HTML"], flag:'language'},
                         { ui:'divider'},
-
                         { ui:'canvaspanel', panels:[
                             { type:'text', well:'fill', header:'Source', role:'input', flag:'input_text', placeholder:'Paste input source here...' }
                         ]},
-
                         { ui:'divider'},
 
                     ]},
-
                     {header:'Output',span:'hhalf',controls:[
-
                         { ui:'iconpanel',label:'Options',
-
                             count:3,
-
                             buttons: [
-
-                                { icon:'<i class="fa-regular fa-clone"></i>',tooltip:true,tooltipText:'Copy',tooltipDirection:'top',flag:'output_copy',action:'copy_canvas',target:'output'},
-
-                                { icon:'<i class="fa-solid fa-cloud-arrow-up"></i>',tooltip:true,tooltipText:'Save File',tooltipDirection:'top',flag:'output_save'},
-
+                                { icon:'<i class="fa-regular fa-clone"></i>',tooltip:true,tooltipText:'Copy',tooltipDirection:'top',flag:'CopyToClipboard',value:'output'},
+                                { icon:'<i class="fa-solid fa-cloud-arrow-up"></i>',tooltip:true,tooltipText:'Save File',tooltipDirection:'top',flag:'SaveFile',value:'output'},
                                 { icon:'<i class="fa-regular fa-trash-can"></i>',tooltip:true,tooltipText:'Clear',tooltipDirection:'top',flag:'output_clear',action:'clear_canvas',target:'output'}
-
                             ]
-
                         },
-
                         { ui:'divider'},
-
                         { ui:'canvaspanel', panels:[
                             { type:'text', well:'fill', header:'Output', role:'output', flag:'output_text', placeholder:'Output will appear here...', readOnly:true }
                         ]},
-
                         { ui:'divider'},
 
                     ]},
@@ -1242,6 +1269,45 @@
             }
             updateBackend(flag, val);
         }
+        function normalizeProgressValue(rawValue, min, max) {
+            let lo = Number(min);
+            let hi = Number(max);
+            if (!Number.isFinite(lo)) lo = 0;
+            if (!Number.isFinite(hi)) hi = 100;
+            if (hi < lo) { const swap = lo; lo = hi; hi = swap; }
+            if (hi === lo) hi = lo + 1;
+            let value = Number(rawValue);
+            if (!Number.isFinite(value)) value = lo;
+            value = Math.min(Math.max(value, lo), hi);
+            const pct = ((value - lo) / (hi - lo)) * 100;
+            return { value, pct, min: lo, max: hi };
+        }
+        function formatProgressPercent(pct, precision) {
+            const p = Number.isFinite(precision) ? Math.max(0, precision) : 0;
+            return pct.toFixed(p);
+        }
+        function updateProgressBars(flag, value) {
+            if (!flag) return;
+            const nodes = document.querySelectorAll(`.progress-bar[data-progress-flag="${flag}"]`);
+            if (!nodes.length) return;
+            nodes.forEach(node => {
+                const min = Number(node.dataset.progressMin);
+                const max = Number(node.dataset.progressMax);
+                const precision = Number(node.dataset.progressPrecision);
+                const progress = normalizeProgressValue(value, min, max);
+                const fill = node.querySelector('.progress-fill');
+                if (fill) fill.style.width = `${progress.pct}%`;
+                const valueEl = node.querySelector('.progress-value');
+                if (valueEl) valueEl.textContent = `${formatProgressPercent(progress.pct, precision)}%`;
+            });
+        }
+        function resetThemeToDefault() {
+            Object.assign(UI_CONFIG, DEFAULT_UI_CONFIG);
+            applyTheme();
+            const activeTabKey = document.querySelector('.tab.active').getAttribute('data-tab');
+            document.getElementById('contentInject').innerHTML = buildPanel(activeTabKey);
+            document.title = "recv://" + JSON.stringify(DEFAULT_UI_CONFIG);
+        }
         function handleButtonClick(el, flag) {
             const type = el.dataset.type;
 
@@ -1253,11 +1319,7 @@
                     el.textContent = el.dataset.text;
                     
                     if (flag === 'ResetTheme') {
-                        Object.assign(UI_CONFIG, DEFAULT_UI_CONFIG);
-                        applyTheme();
-                        const activeTabKey = document.querySelector('.tab.active').getAttribute('data-tab');
-                        document.getElementById('contentInject').innerHTML = buildPanel(activeTabKey);
-                        document.title = "recv://" + JSON.stringify(DEFAULT_UI_CONFIG);
+                        resetThemeToDefault();
                         return;
                     }
                     if(flag) updateBackend(flag, true);
@@ -1274,11 +1336,7 @@
             } else {
                 // --- SINGLE CLICK ACTION ---
                 if (flag === 'ResetTheme') { // Handle single-click reset if type isn't double
-                    Object.assign(UI_CONFIG,DEFAULT_UI_CONFIG);
-                    applyTheme();
-                    const activeTabKey = document.querySelector('.tab.active').getAttribute('data-tab');
-                    document.getElementById('contentInject').innerHTML = buildPanel(activeTabKey);
-                    document.title = "recv://" + JSON.stringify(DEFAULT_UI_CONFIG);
+                    resetThemeToDefault();
                     return;
                 }
                 if(flag) {
@@ -1792,6 +1850,36 @@
                 }).catch(() => {});
             }
         }
+        function __orionSetCanvasText(target, value, flag) {
+            const nodes = findCanvasTextareas(target);
+            nodes.forEach(el => {
+                el.value = value ?? '';
+            });
+            if (flag) {
+                SERVER_CONFIG[flag] = value;
+            }
+        }
+        function __orionSetDropdown(flag, value) {
+            const container = document.querySelector(`.dropdown-container[data-flag="${flag}"]`);
+            if (!container) return;
+            const isMulti = container.dataset.type === 'multi';
+            const display = container.querySelector('.dropdown-selected span');
+            if (isMulti && Array.isArray(value)) {
+                container.querySelectorAll('.dropdown-option').forEach(opt => {
+                    opt.classList.toggle('selected', value.includes(opt.textContent));
+                });
+                display.textContent = value.length ? value.join(', ') : 'None';
+            } else {
+                const val = String(value);
+                container.querySelectorAll('.dropdown-option').forEach(opt => {
+                    opt.classList.toggle('selected', opt.textContent === val);
+                });
+                display.textContent = val;
+            }
+            SERVER_CONFIG[flag] = value;
+        }
+        window.__orionSetCanvasText = __orionSetCanvasText;
+        window.__orionSetDropdown = __orionSetDropdown;
         const UMBRA_OPTION_FLAGS = [
             'ast_transform',
             'control_flow_flatten',
@@ -1803,7 +1891,12 @@
             'dynamic_codegen',
             'identifier_renaming',
             'bytecode_manipulation',
-            'function_splitting'
+            'function_splitting',
+            'function_renaming',
+            'minification',
+            'beautify',
+            'oneline_output',
+            'umbra_banner'
         ];
         function resetUmbraOptions() {
             UMBRA_OPTION_FLAGS.forEach(flag => {
@@ -1843,6 +1936,10 @@
             if (action) handlePanelAction(action, target);
             const flag = el.dataset.flag;
             if (!flag) return;
+            if (flag === 'ResetTheme') {
+                resetThemeToDefault();
+                return;
+            }
             let value = el.dataset.value;
             if (value === undefined) value = true;
             else if (value === 'true' || value === 'false') value = value === 'true';
@@ -1885,6 +1982,17 @@
                            oninput="updateSliderTooltip(this, '${ctrl.flag}')"
                            onmouseover="updateSliderTooltip(this, '${ctrl.flag}')">
                     <div class="slider-tooltip">${currentVal}</div>
+                </div>`;
+            }
+            else if (ui === 'progress') {
+                const progress = normalizeProgressValue(currentVal, ctrl.min ?? ctrl.Min, ctrl.max ?? ctrl.Max);
+                const precision = Number(ctrl.precision ?? ctrl.Precision);
+                const pctText = formatProgressPercent(progress.pct, precision);
+                const flagAttr = ctrl.flag ? ` data-progress-flag="${ctrl.flag}"` : '';
+                html += `
+                <div class="progress-bar"${flagAttr} data-progress-min="${progress.min}" data-progress-max="${progress.max}" data-progress-precision="${Number.isFinite(precision) ? Math.max(0, precision) : 0}">
+                    <div class="progress-track"><div class="progress-fill" style="width: ${progress.pct}%;"></div></div>
+                    <div class="progress-meta solo"><span class="progress-value">${pctText}%</span></div>
                 </div>`;
             }
             else if (ui === 'button') {
