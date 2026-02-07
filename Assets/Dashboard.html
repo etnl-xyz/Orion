@@ -60,7 +60,7 @@
 
         .tooltip {
             position: absolute;
-            bottom: calc(100% + 10px);
+            top: calc(100% + 10px);
             left: 50%;
             transform: translateX(-50%) scale(0.8);
             background: var(--tab-bg);
@@ -79,14 +79,14 @@
         .tooltip::before {
             content: '';
             position: absolute;
-            top: 100%;
+            bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
             border-left: 6px solid transparent;
             border-right: 6px solid transparent;
-            border-top: 6px solid var(--secondary);
+            border-bottom: 6px solid var(--secondary);
         }
 
         .toggle-notch { 
