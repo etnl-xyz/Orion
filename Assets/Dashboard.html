@@ -49,15 +49,8 @@
 
         .tabview-container { position: fixed; top: 0; left: 0; right: 0; background: var(--panel-bg); border-bottom: 1px solid var(--secondary); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s; z-index: 1000; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); padding-bottom: 0px; }
         .tabview-container.collapsed { transform: translateY(-100%); }
-        .tabs { display: flex; justify-content: center; align-items: center; padding: 20px 40px; width: 100%; }
-        .tabs[data-count="1"] { justify-content: center; }
-        .tabs[data-count="1"] .tab { margin: 0; }
-        .tabs[data-count="2"] { justify-content: space-around; max-width: 66.66%; margin: 0 auto; }
-        .tabs[data-count="2"] .tab:first-child { margin-right: auto; }
-        .tabs[data-count="2"] .tab:last-child { margin-left: auto; }
-        .tabs:not([data-count="1"]):not([data-count="2"]) { gap: 32px; }
-        
-        .tab { position: relative; background: var(--tab-bg); border: 1px solid var(--secondary); border-radius: 8px; padding: 16px 20px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; min-width: 60px; z-index: 1001; }
+                .tabs { position: relative; padding: 20px 40px; width: 100%; }
+        .tab { position: absolute; top: 50%; transform: translate(-50%, -50%); background: var(--tab-bg); border: 1px solid var(--secondary); border-radius: 8px; padding: 16px 20px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; min-width: 60px; z-index: 1001; }
         .tab:hover { background: var(--tab-hover); border-color: var(--text-sub); box-shadow: 0 0 18px rgba(255, 255, 255, 0.1); }
         .tab.active { background: var(--panel-bg); border-color: var(--text-color); box-shadow: 0 0 18px rgba(255, 255, 255, 0.15); }
         body.Glow-active .tab.active { box-shadow: 0 0 var(--glow-spread) var(--glow-color), 0 0 18px rgba(255, 255, 255, 0.15); }
@@ -1989,11 +1982,26 @@
             applyTheme();
             const tabview = document.getElementById('tabview');
             const toggleNotch = document.getElementById('toggleNotch');
-            const tabs = document.querySelectorAll('.tab');
+            const tabs = Array.from(document.querySelectorAll('.tab'));
             const tabsContainer = document.getElementById('tabs');
             const panel = document.getElementById('panel');
             const injector = document.getElementById('contentInject');
-            tabsContainer.setAttribute('data-count', tabs.length);
+            const tabCount = tabs.length;
+            tabsContainer.setAttribute('data-count', tabCount);
+            if (tabCount) {
+                const tabStyles = getComputedStyle(tabsContainer);
+                const padTop = parseFloat(tabStyles.paddingTop) || 0;
+                const padBottom = parseFloat(tabStyles.paddingBottom) || 0;
+                let maxH = 0;
+                tabs.forEach(tab => { maxH = Math.max(maxH, tab.offsetHeight || 0); });
+                if (maxH) {
+                    tabsContainer.style.height = `${maxH + padTop + padBottom}px`;
+                }
+                tabs.forEach((tab, idx) => {
+                    const pos = ((idx + 1) / (tabCount + 1)) * 100;
+                    tab.style.left = `${pos}%`;
+                });
+            }
             const initialTab = document.querySelector('.tab.active');
             const initialKey = initialTab.getAttribute('data-tab');
             injector.innerHTML = buildPanel(initialKey);
