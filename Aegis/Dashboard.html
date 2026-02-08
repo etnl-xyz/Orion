@@ -1693,9 +1693,19 @@
                 title: 'Logs',
                 grid: [
                     {header:'System Logs',span:'fill',controls:[
+                        { ui:'iconpanel',label:'Options',
+                            count:3,
+                            buttons: [
+                                { icon:'<i class="fa-regular fa-clone"></i>',tooltip:true,tooltipText:'Copy',tooltipDirection:'top',flag:'CopyToClipboard',value:'output'},
+                                { icon:'<i class="fa-solid fa-cloud-arrow-up"></i>',tooltip:true,tooltipText:'Save File',tooltipDirection:'top',flag:'SaveLog',value:'output'},
+                                { icon:'<i class="fa-regular fa-trash-can"></i>',tooltip:true,tooltipText:'Clear',tooltipDirection:'top',flag:'log_clear',action:'clear_canvas',target:'output'}
+                            ]
+                        },
+                        { ui:'divider'},
                         { ui:'canvaspanel', panels:[
-                            {type:'text',well:'fill',header:'Log',role:'',flag:'',readOnly:true},
+                            { type:'text',well:'fill',header:'Log',role:'output',flag:'log_text',placeholder:'',readOnly:true }
                         ]},
+                        { ui:'divider'},
                     ]},
                 ]
             },
