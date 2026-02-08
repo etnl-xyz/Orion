@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Umbra</title>
+    <title>Orion</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link id="dynamic-font" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jura&display=swap">
     <style>
@@ -211,7 +211,9 @@
         body.Glassmorphism-active .dropdown-options,
         body.Glassmorphism-active .color-trigger,
         body.Glassmorphism-active .color-popover,
-        body.Glassmorphism-active .toggle-notch {
+        body.Glassmorphism-active .toggle-notch,
+        body.Glassmorphism-active .ui-tooltip,
+        body.Glassmorphism-active .slider-tooltip {
             backdrop-filter: blur(10px) saturate(160%) !important;
             -webkit-backdrop-filter: blur(10px) saturate(160%) !important;
             border: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -231,7 +233,8 @@
         body.Glassmorphism-active .icon-panel-btn,
         body.Glassmorphism-active .canvas-tool-btn,
         body.Glassmorphism-active .dropdown-selected,
-        body.Glassmorphism-active .color-trigger {
+        body.Glassmorphism-active .color-trigger,
+        body.Glassmorphism-active .slider-tooltip {
             background: color-mix(in srgb, var(--input-bg), transparent 30%) !important;
         }
         body.Glassmorphism-active .tab {
@@ -243,7 +246,8 @@
             background: color-mix(in srgb, var(--tab-hover), transparent 30%) !important;
         }
         body.Glassmorphism-active .dropdown-options,
-        body.Glassmorphism-active .color-popover {
+        body.Glassmorphism-active .color-popover,
+        body.Glassmorphism-active .ui-tooltip {
             background: color-mix(in srgb, var(--tab-bg), transparent 10%) !important;
         }
         body.Glassmorphism-active .footer {
@@ -1207,9 +1211,7 @@
                                 { icon:'<i class="fa-solid fa-file-import"></i>',tooltip:true,tooltipText:'Paste',tooltipDirection:'top',flag:'PasteFromClipboard',value:'input'},
                                 { icon:'<i class="fa-solid fa-cloud-arrow-down"></i>',tooltip:true,tooltipText:'Open File',tooltipDirection:'top',flag:'OpenFile',value:'input'},
                                 { icon:'<i class="fa-regular fa-trash-can"></i>',tooltip:true,tooltipText:'Clear',tooltipDirection:'top',flag:'input_clear',action:'clear_canvas',target:'input'}
-
                             ]
-
                         },
                         { ui:'dropdown', label:'Language', type:'single', options: ["PY","HTML"], flag:'language'},
                         { ui:'divider'},
@@ -1217,7 +1219,6 @@
                             { type:'text', well:'fill', header:'Source', role:'input', flag:'input_text', placeholder:'Paste input source here...' }
                         ]},
                         { ui:'divider'},
-
                     ]},
                     {header:'Output',span:'hhalf',controls:[
                         { ui:'iconpanel',label:'Options',
