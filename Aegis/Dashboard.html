@@ -1688,19 +1688,7 @@
                 grid: [
                     {header:'System Logs',span:'fill',controls:[
                         { ui:'canvaspanel', panels:[
-                            { type:'control',well:'fill',header:'Event Log',
-                                controls: [
-                                    {
-                                        ui: 'canvaspanel',panels: [
-                                            {type: 'text',well: 'fill',header: 'Log Output',readonly: true,placeholder: 'Log entries will appear here...',buttons: [
-                                                    { icon: '<i class="fa-solid fa-copy"></i>', action: 'copy', target: 'logOutput', tooltip: true, tooltipText: 'Copy Logs' },
-                                                    { icon: '<i class="fa-solid fa-trash"></i>', action: 'clear', target: 'logOutput', tooltip: true, tooltipText: 'Clear Logs' }
-                                                ],id:'logOutput'
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
+                            {type:'text',well:'fill',header:'Log',role:'',flag:'',readOnly:true},
                         ]},
                     ]},
                 ]
