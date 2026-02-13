@@ -1,2299 +1,4690 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
+
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Crown</title>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+
     <link id="dynamic-font" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jura&display=swap">
+
     <style>
+
         :root {
+
             --font-family: 'Jura', sans-serif;
+
             --bg-color: #0a0a0a;
+
             --primary: #101010;
+
             --secondary: #333333;
+
             --text-color: #eaeaea;
+
             --panel-bg: #222222;
+
             --sub-panel-bg: #202020;
+
             --input-bg: #303030;
+
             --tab-bg: #1a1a1a;
+
             --tab-hover: #2a2a2a;
+
             --accent-hover: #3a3a3a;
+
             --text-sub: #bebebe;
+
             --glow-color: transparent;
+
             --glow-spread: 0px;
+
             --notify-edge: clamp(10px, 2.5vmin, 20px);
+
             --subpanel-vhalf: clamp(240px, 40vh, 460px);
+
         }
+
+
 
         * {
+
             margin: 0;
+
             padding: 0;
+
             box-sizing: border-box;
+
             outline: none;
+
         }
+
+
 
         body {
+
             background: var(--bg-color);
+
             color: var(--text-color);
+
             font-family: var(--font-family);
+
             height: 100vh;
+
             overflow: hidden;
+
             transition: background 0.3s, color 0.3s;
+
         }
+
+
 
         .tabview-container,
+
         .main-content,
+
         .content-panel,
+
         .toggle-notch,
+
         .sub-panel,
+
         .control-item {
+
             will-change: transform, opacity, backdrop-filter;
+
         }
+
+
 
         .tabview-container {
+
             position: fixed;
+
             top: 0;
+
             left: 0;
+
             right: 0;
+
             background: var(--panel-bg);
+
             border-bottom: 1px solid var(--secondary);
+
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
+
             z-index: 1000;
+
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+
             padding-bottom: 0px;
+
         }
+
+
 
         .tabview-container.collapsed {
+
             transform: translateY(-100%);
+
         }
+
+
 
         .tabs {
+
             position: relative;
+
             padding: 20px 40px;
+
             width: 100%;
+
         }
+
+
 
         .tab {
+
             position: absolute;
+
             top: 50%;
+
             transform: translate(-50%, -50%);
+
             background: var(--tab-bg);
+
             border: 1px solid var(--secondary);
+
             border-radius: 8px;
+
             padding: 16px 20px;
+
             cursor: pointer;
+
             transition: all 0.3s ease;
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
+
             min-width: 60px;
+
             z-index: 1001;
+
         }
+
+
 
         .tab:hover {
+
             background: var(--tab-hover);
+
             border-color: var(--text-sub);
+
             box-shadow: 0 0 18px rgba(255, 255, 255, 0.1);
+
         }
+
+
 
         .tab.active {
+
             background: var(--panel-bg);
+
             border-color: var(--text-color);
+
             box-shadow: 0 0 18px rgba(255, 255, 255, 0.15);
+
         }
+
+
 
         body.Glow-active .tab.active {
+
             box-shadow: 0 0 var(--glow-spread) var(--glow-color), 0 0 18px rgba(255, 255, 255, 0.15);
+
         }
+
+
 
         .tab i {
+
             font-size: 1.3em;
+
             color: var(--text-color);
+
         }
+
+
 
         .tab:hover .tooltip {
+
             opacity: 1;
+
             transform: translateX(-50%) scale(1);
+
         }
+
+
 
         .tooltip {
+
             position: absolute;
+
             top: calc(100% + 10px);
+
             left: 50%;
+
             transform: translateX(-50%) scale(0.8);
+
             background: var(--tab-bg);
+
             border: 1px solid var(--secondary);
+
             border-radius: 6px;
+
             padding: 8px 14px;
+
             font-size: 0.85em;
+
             color: var(--text-color);
+
             white-space: nowrap;
+
             opacity: 0;
+
             pointer-events: none;
+
             transition: all 0.2s ease;
+
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+
             z-index: 1001;
+
         }
+
+
 
         .tooltip::before {
+
             content: '';
+
             position: absolute;
+
             bottom: 100%;
+
             left: 50%;
+
             transform: translateX(-50%);
+
             width: 0;
+
             height: 0;
+
             border-left: 6px solid transparent;
+
             border-right: 6px solid transparent;
+
             border-bottom: 6px solid var(--secondary);
+
         }
+
+
 
         .toggle-notch {
+
             position: absolute;
+
             top: 100%;
+
             margin-top: -1px;
+
             left: 50%;
+
             transform: translateX(-50%);
+
             background: var(--panel-bg);
+
             border: 1px solid var(--secondary);
+
             border-top: none;
+
             border-radius: 0 0 12px 12px;
+
             padding: 8px 30px;
+
             cursor: pointer;
+
             transition: background 0.3s ease, box-shadow 0.3s ease, opacity 1s ease-in-out;
+
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
             z-index: 1002;
+
             opacity: 1;
+
         }
+
+
 
         .toggle-notch:hover {
+
             background: var(--tab-hover);
+
             box-shadow: 0 4px 18px rgba(255, 255, 255, 0.1);
+
             opacity: 1 !important;
+
         }
+
+
 
         .toggle-notch i {
+
             font-size: 1em;
+
             color: var(--text-color);
+
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
         }
+
+
 
         .tabview-container.collapsed .toggle-notch i {
+
             transform: rotate(180deg);
+
         }
+
+
 
         .toggle-notch.idle-vanish {
+
             opacity: 0;
+
             pointer-events: auto;
+
         }
+
+
 
         .main-content {
+
             position: fixed;
+
             top: 0;
+
             left: 0;
+
             right: 0;
+
             bottom: 0;
+
             display: flex;
+
             flex-direction: column;
+
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
             padding-top: 100px;
+
         }
+
+
 
         .tabview-container.collapsed~.main-content {
+
             padding-top: 15px;
+
         }
+
+
 
         .content-panel {
+
             position: relative;
+
             flex: 1;
+
             background: var(--panel-bg);
+
             border: 1px solid var(--secondary);
+
             border-radius: 14px;
+
             margin: 20px;
+
             display: flex;
+
             flex-direction: column;
+
             box-shadow: 0 0 40px rgba(0, 0, 0, 0.4);
+
             overflow: hidden;
+
             transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), filter 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s, box-shadow 0.3s;
+
             transform: translateX(60px) scale(0.95);
+
             filter: blur(12px);
+
             opacity: 0;
+
         }
+
+
 
         .content-panel.active {
+
             transform: translateX(0) scale(1);
+
             filter: blur(0);
+
             opacity: 1;
+
         }
+
+
 
         .content-panel.slide-out-left {
+
             transform: translateX(-60px) scale(0.95);
+
             filter: blur(12px);
+
             opacity: 0;
+
         }
+
+
 
         .content-panel.slide-out-right {
+
             transform: translateX(60px) scale(0.95);
+
             filter: blur(12px);
+
             opacity: 0;
+
         }
+
+
 
         .content-panel.slide-in-left {
+
             transform: translateX(60px) scale(0.95);
+
         }
+
+
 
         .content-panel.slide-in-right {
+
             transform: translateX(-60px) scale(0.95);
+
         }
+
+
 
         .panel-scroll-area {
+
             flex: 1;
+
             overflow-y: auto;
+
             padding: 40px;
+
             scrollbar-width: none;
+
             -ms-overflow-style: none;
+
         }
+
+
 
         .panel-scroll-area::-webkit-scrollbar {
+
             display: none;
+
         }
+
+
 
         .footer {
+
             flex-shrink: 0;
+
             background: var(--panel-bg);
+
             padding: 15px 0;
+
             margin: 0 40px;
+
             border-top: 1px solid var(--secondary);
+
             font-size: 0.75em;
+
             color: var(--text-sub);
+
             text-align: center;
+
             z-index: 5;
+
             transition: background 0.3s;
+
         }
+
+
 
         .sub-panel-grid {
+
             display: flex;
+
             gap: 20px;
+
             flex: 1;
+
             width: 100%;
+
             flex-direction: row;
+
             flex-wrap: wrap;
+
             align-content: flex-start;
+
             padding: 2px;
+
         }
+
+
 
         .sub-panel {
+
             display: flex;
+
             flex-direction: column;
+
             background: var(--sub-panel-bg);
+
             border: 1px solid rgba(255, 255, 255, 0.04);
+
             border-radius: 8px;
+
             padding: 20px;
+
             gap: 15px;
+
             min-width: 300px;
+
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
             margin: 1.5px;
+
             position: relative;
+
         }
+
+
 
         .sub-panel.fill {
+
             width: calc(100% - 3px);
+
             flex: 1 1 100%;
+
         }
+
+
 
         .sub-panel.hhalf,
+
         .sub-panel.half {
+
             width: calc(50% - 13px);
+
             flex: 1 1 40%;
+
         }
+
+
 
         .sub-panel.vhalf {
+
             width: calc(50% - 13px);
+
             flex: 1 1 40%;
+
             min-height: var(--subpanel-vhalf);
+
         }
+
+
 
         .sub-panel.blob {
+
             flex: 1 1 300px;
+
             width: auto;
+
         }
+
+
 
         .sub-panel.popout-open {
+
             z-index: 50;
+
         }
+
+
 
         body.visual-depth-active .content-panel.active:hover {
+
             transform: translateY(-2px);
+
         }
+
+
 
         body.visual-depth-active .sub-panel:hover {
+
             transform: translateY(-3px);
+
             background: var(--tab-hover);
+
             border-color: rgba(255, 255, 255, 0.08);
+
         }
+
+
 
         body.visual-depth-active .control-item:hover {
+
             transform: translateY(-2px);
+
             background: rgba(255, 255, 255, 0.04);
+
         }
+
+
 
         body.Glow-active .content-panel:hover {
+
             box-shadow: 0 0 var(--glow-spread) var(--glow-color), 0 0 40px rgba(0, 0, 0, 0.4);
+
         }
+
+
 
         body.Glow-active .sub-panel:hover {
+
             box-shadow: 0 0 var(--glow-spread) var(--glow-color);
+
         }
+
+
 
         body.Glow-active .control-item:hover {
+
             box-shadow: 0 0 var(--glow-spread) var(--glow-color);
+
         }
+
+
 
         body.Glow-active .button:hover,
+
         body.Glow-active .input:focus,
+
         body.Glow-active .dropdown-selected.active,
+
         body.Glow-active .color-trigger.active,
+
         body.Glow-active .switch.on,
+
         body.Glow-active .icon-panel-btn:hover {
+
             box-shadow: 0 0 var(--glow-spread) var(--glow-color);
+
             border-color: var(--glow-color) !important;
+
         }
+
+
 
         body.Glow-active.visual-depth-active .sub-panel:hover {
+
             box-shadow: 0 0 var(--glow-spread) var(--glow-color);
+
         }
 
+
+
         body.Glassmorphism-active .content-panel,
+
         body.Glassmorphism-active .sub-panel,
+
         body.Glassmorphism-active .tabview-container,
+
         body.Glassmorphism-active .tab,
+
         body.Glassmorphism-active .input,
+
         body.Glassmorphism-active .button,
+
         body.Glassmorphism-active .icon-panel,
+
         body.Glassmorphism-active .icon-panel-btn,
+
         body.Glassmorphism-active .canvas-panel,
+
         body.Glassmorphism-active .canvas-tool-btn,
+
         body.Glassmorphism-active .dropdown-selected,
+
         body.Glassmorphism-active .dropdown-options,
+
         body.Glassmorphism-active .color-trigger,
+
         body.Glassmorphism-active .color-popover,
+
         body.Glassmorphism-active .toggle-notch,
+
         body.Glassmorphism-active .ui-tooltip,
+
         body.Glassmorphism-active .slider-tooltip {
+
             backdrop-filter: blur(10px) saturate(160%) !important;
+
             -webkit-backdrop-filter: blur(10px) saturate(160%) !important;
+
             border: 1px solid rgba(255, 255, 255, 0.08) !important;
+
         }
+
         body.Glassmorphism-active .tabview-container,
+
         body.Glassmorphism-active .content-panel,
+
         body.Glassmorphism-active .toggle-notch {
+
             background: color-mix(in srgb, var(--panel-bg), transparent 30%) !important;
+
         }
+
         body.Glassmorphism-active .sub-panel,
+
         body.Glassmorphism-active .canvas-panel {
+
             background: color-mix(in srgb, var(--sub-panel-bg), transparent 30%) !important;
+
         }
+
         body.Glassmorphism-active .input,
+
         body.Glassmorphism-active .button,
+
         body.Glassmorphism-active .icon-panel,
+
         body.Glassmorphism-active .icon-panel-btn,
+
         body.Glassmorphism-active .canvas-tool-btn,
+
         body.Glassmorphism-active .dropdown-selected,
+
         body.Glassmorphism-active .color-trigger,
+
         body.Glassmorphism-active .slider-tooltip {
+
             background: color-mix(in srgb, var(--input-bg), transparent 30%) !important;
+
         }
+
         body.Glassmorphism-active .tab {
+
             background: color-mix(in srgb, var(--tab-bg), transparent 30%) !important;
+
         }
+
         body.Glassmorphism-active .tab.active,
+
         body.Glassmorphism-active .dropdown-option:hover,
+
         body.Glassmorphism-active .dropdown-option.selected {
+
             background: color-mix(in srgb, var(--tab-hover), transparent 30%) !important;
+
         }
+
         body.Glassmorphism-active .dropdown-options,
+
         body.Glassmorphism-active .color-popover,
+
         body.Glassmorphism-active .ui-tooltip {
+
             background: color-mix(in srgb, var(--tab-bg), transparent 10%) !important;
+
         }
+
         body.Glassmorphism-active .footer {
+
             background: transparent !important;
+
             border-top: 1px solid rgba(255, 255, 255, 0.05);
+
         }
+
+
 
         h2.panel-title {
+
             margin-bottom: 25px;
+
             font-weight: 300;
+
             letter-spacing: 4px;
+
             text-align: center;
+
             text-transform: uppercase;
+
             color: var(--text-color);
+
         }
+
+
 
         .sub-header {
+
             font-size: 11px;
+
             text-transform: uppercase;
+
             letter-spacing: 2px;
+
             color: var(--text-sub);
+
             border-bottom: 1px solid var(--secondary);
+
             padding-bottom: 10px;
+
             margin-bottom: 5px;
+
             text-align: left;
+
         }
+
+
 
         .control-item {
+
             display: flex;
+
             align-items: center;
+
             justify-content: space-between;
+
             background: rgba(255, 255, 255, 0.01);
+
             padding: 10px 14px;
+
             border-radius: 6px;
+
             border: 1px solid transparent;
+
             transition: 0.2s;
+
             min-height: 48px;
+
             position: relative;
+
             overflow: visible;
+
         }
+
+
 
         .control-item:hover {
+
             background: rgba(255, 255, 255, 0.03);
+
             border-color: var(--secondary);
+
         }
+
+
 
         label {
+
             font-size: 13px;
+
             color: var(--text-color);
+
         }
+
+
 
         .ui-tooltip {
+
             position: absolute;
+
             left: 50%;
+
             transform: translateX(-50%) scale(0.96);
+
             background: var(--tab-bg);
+
             border: 1px solid var(--secondary);
+
             border-radius: 6px;
+
             padding: 6px 10px;
+
             font-size: 11px;
+
             color: var(--text-color);
+
             white-space: nowrap;
+
             opacity: 0;
+
             pointer-events: none;
+
             transition: opacity 0.15s ease, transform 0.15s ease;
+
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.55);
+
             z-index: 20;
+
         }
+
+
 
         .control-item.has-tooltip:hover>.ui-tooltip,
+
         .icon-panel-btn.has-tooltip:hover>.ui-tooltip {
+
             opacity: 1;
+
             transform: translateX(-50%) scale(1);
+
         }
+
+
 
         .ui-tooltip[data-dir="top"] {
+
             bottom: calc(100% + 8px);
+
         }
+
+
 
         .ui-tooltip[data-dir="top"]::before {
+
             content: '';
+
             position: absolute;
+
             top: 100%;
+
             left: 50%;
+
             transform: translateX(-50%);
+
             width: 0;
+
             height: 0;
+
             border-left: 6px solid transparent;
+
             border-right: 6px solid transparent;
+
             border-top: 6px solid var(--secondary);
+
         }
+
+
 
         .ui-tooltip[data-dir="bottom"] {
+
             top: calc(100% + 8px);
+
         }
+
+
 
         .ui-tooltip[data-dir="bottom"]::before {
+
             content: '';
+
             position: absolute;
+
             top: -6px;
+
             left: 50%;
+
             transform: translateX(-50%);
+
             width: 0;
+
             height: 0;
+
             border-left: 6px solid transparent;
+
             border-right: 6px solid transparent;
+
             border-bottom: 6px solid var(--secondary);
+
         }
+
+
 
         .divider {
+
             height: 1px;
+
             width: 100%;
+
             background: linear-gradient(90deg, transparent, var(--secondary), transparent);
+
             margin: 10px 0;
+
             opacity: 0.6;
+
         }
+
+
 
         body.Glow-active .divider {
+
             box-shadow: 0 0 var(--glow-spread) var(--glow-color);
+
         }
+
+
 
         .slider-wrapper {
+
             flex: 0 0 55%;
+
             display: flex;
+
             align-items: center;
+
             position: relative;
+
             height: 100%;
+
         }
+
+
 
         .slider-tooltip {
+
             position: absolute;
+
             top: -15px;
+
             left: 50%;
+
             transform: translateX(-50%);
+
             background: var(--input-bg);
+
             border: 1px solid var(--secondary);
+
             border-radius: 4px;
+
             padding: 2px 6px;
+
             font-size: 10px;
+
             color: var(--text-color);
+
             opacity: 0;
+
             pointer-events: none;
+
             transition: opacity 0.2s ease, top 0.2s ease;
+
             white-space: nowrap;
+
             z-index: 10;
+
         }
+
+
 
         .slider-wrapper:hover .slider-tooltip,
+
         .slider-wrapper input:active+.slider-tooltip {
+
             opacity: 1;
+
             top: -30px;
+
         }
+
+
 
         input[type="range"] {
+
             -webkit-appearance: none;
+
             width: 100%;
+
             background: var(--input-bg);
+
             height: 3px;
+
             border-radius: 2px;
+
             cursor: pointer;
+
             margin: 0;
+
             display: block;
+
         }
+
+
 
         input[type="range"]::-webkit-slider-thumb {
+
             -webkit-appearance: none;
+
             width: 14px;
+
             height: 14px;
+
             background: var(--text-sub);
+
             border-radius: 50%;
+
             cursor: pointer;
+
             box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+
             transition: 0.2s;
+
             border: 2px solid var(--input-bg);
+
         }
+
+
 
         input[type="range"]::-webkit-slider-thumb:hover {
+
             transform: scale(1.2);
+
             background: var(--text-color);
+
         }
+
+
 
         .switch {
+
             width: 38px;
+
             height: 18px;
+
             background: var(--input-bg);
+
             border-radius: 20px;
+
             position: relative;
+
             cursor: pointer;
+
             border: 1px solid var(--secondary);
+
             transition: 0.3s;
+
         }
+
+
 
         .switch::before {
+
             content: '';
+
             position: absolute;
+
             width: 12px;
+
             height: 12px;
+
             background: #666;
+
             border-radius: 50%;
+
             top: 2px;
+
             left: 2px;
+
             transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
         }
+
+
 
         .switch.on {
+
             background: var(--secondary);
+
             border-color: #666;
+
         }
+
+
 
         .switch.on::before {
+
             left: 22px;
+
             background: var(--text-color);
+
         }
+
+
 
         .input {
+
             background: var(--input-bg);
+
             border: 1px solid var(--secondary);
+
             border-radius: 4px;
+
             padding: 8px 12px;
+
             color: var(--text-color);
+
             font-size: 13px;
+
             width: 180px;
+
             transition: 0.3s;
+
             font-family: var(--font-family);
+
         }
+
+
 
         .input:focus {
+
             border-color: var(--text-sub);
+
             background: var(--tab-hover);
+
         }
+
+
 
         .button {
+
             background: var(--input-bg);
+
             border: 1px solid var(--secondary);
+
             border-radius: 4px;
+
             padding: 7px 16px;
+
             color: var(--text-color);
+
             font-family: var(--font-family);
+
             font-size: 11px;
+
             cursor: pointer;
+
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
             text-transform: uppercase;
+
             letter-spacing: 1px;
+
             min-width: 80px;
+
             text-align: center;
+
         }
+
+
 
         .button:hover {
+
             background: var(--tab-hover);
+
             border-color: var(--text-sub);
+
             transform: translateY(-1px);
+
         }
+
+
 
         .button:active {
+
             transform: translateY(0) scale(0.97);
+
             background: var(--sub-panel-bg);
+
         }
+
+
 
         body.visual-depth-active .button:hover {
+
             transform: translateY(-1px);
+
         }
+
+
 
         .icon-panel {
+
             position: relative;
+
             width: 180px;
+
             height: 36px;
+
             background: var(--input-bg);
+
             border: 1px solid var(--secondary);
+
             border-radius: 6px;
+
             display: block;
+
         }
+
+
 
         .icon-panel-btn {
+
             position: absolute;
+
             top: 50%;
+
             transform: translate(-50%, -50%);
+
             width: 26px;
+
             height: 26px;
+
             border-radius: 6px;
+
             background: var(--input-bg);
+
             border: 1px solid rgba(255, 255, 255, 0.08);
+
             display: grid;
+
             place-items: center;
+
             color: var(--text-color);
+
             cursor: pointer;
+
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
         }
+
+
 
         .icon-panel-btn i {
+
             font-size: 0.95em;
+
         }
+
+
 
         .icon-panel-btn:hover {
+
             background: var(--tab-hover);
+
             border-color: var(--text-sub);
+
         }
+
+
 
         .icon-panel-btn:active {
+
             transform: translate(-50%, -50%) scale(0.96);
+
         }
+
+
 
         body.visual-depth-active .icon-panel-btn:hover {
+
             transform: translate(-50%, calc(-50% - 1px));
+
         }
+
+
 
         .dropdown-container {
+
             position: relative;
+
             width: 180px;
+
             font-size: 13px;
+
         }
+
+
 
         .dropdown-selected {
+
             background: var(--input-bg);
+
             border: 1px solid var(--secondary);
+
             border-radius: 4px;
+
             padding: 8px 12px;
+
             color: var(--text-color);
+
             cursor: pointer;
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
+
             transition: 0.3s;
+
             height: 36px;
+
             overflow: hidden;
+
         }
+
+
 
         .dropdown-selected:hover {
+
             background: var(--tab-hover);
+
         }
+
+
 
         .dropdown-selected.active {
+
             border-color: var(--text-color);
+
             background: var(--tab-hover);
+
         }
+
+
 
         .dropdown-selected span {
+
             white-space: nowrap;
+
             overflow-x: auto;
+
             scrollbar-width: none;
+
             -ms-overflow-style: none;
+
             flex: 1;
+
             margin-right: 8px;
+
             pointer-events: auto;
+
         }
+
+
 
         .dropdown-selected span::-webkit-scrollbar {
+
             display: none;
+
         }
+
+
 
         .dropdown-selected i {
+
             font-size: 0.8em;
+
             transition: transform 0.3s;
+
             color: var(--text-sub);
+
             flex-shrink: 0;
+
         }
+
+
 
         .dropdown-selected.active i {
+
             transform: rotate(180deg);
+
         }
+
+
 
         .dropdown-options {
+
             position: absolute;
+
             top: calc(100% + 5px);
+
             left: 0;
+
             width: 100%;
+
             background: var(--tab-bg);
+
             border: 1px solid var(--secondary);
+
             border-radius: 4px;
+
             overflow: hidden;
+
             opacity: 0;
+
             pointer-events: none;
+
             transform: translateY(-10px);
+
             transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
             z-index: 9999;
+
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+
             max-height: 150px;
+
             overflow-y: auto;
+
         }
+
+
 
         .dropdown-container.open .dropdown-options {
+
             opacity: 1;
+
             pointer-events: all;
+
             transform: translateY(0);
+
         }
+
+
 
         .dropdown-option {
+
             padding: 8px 12px;
+
             cursor: pointer;
+
             transition: background 0.2s;
+
             color: var(--text-sub);
+
             font-family: var(--font-family);
+
         }
+
+
 
         .dropdown-option:hover {
+
             background: var(--tab-hover);
+
             color: var(--text-color);
+
         }
+
+
 
         .dropdown-option.selected {
+
             color: var(--text-color);
+
             background: var(--input-bg);
+
         }
+
+
 
         .dropdown-options::-webkit-scrollbar {
+
             width: 4px;
+
         }
+
+
 
         .dropdown-options::-webkit-scrollbar-track {
+
             background: var(--tab-bg);
+
         }
+
+
 
         .dropdown-options::-webkit-scrollbar-thumb {
+
             background: var(--secondary);
+
             border-radius: 2px;
+
         }
+
+
 
         .color-container {
+
             position: relative;
+
             font-size: 13px;
+
         }
+
+
 
         .color-trigger {
+
             width: 34px;
+
             height: 34px;
+
             background: var(--input-bg);
+
             border: 1px solid var(--secondary);
+
             border-radius: 4px;
+
             cursor: pointer;
+
             display: flex;
+
             justify-content: center;
+
             align-items: center;
+
             transition: 0.3s;
+
         }
+
+
 
         .color-trigger:hover {
+
             background: var(--tab-hover);
+
         }
+
+
 
         .color-trigger.active {
+
             border-color: var(--text-color);
+
             background: var(--tab-hover);
+
         }
+
+
 
         .color-preview {
+
             width: 16px;
+
             height: 16px;
+
             border-radius: 2px;
+
             border: 1px solid rgba(255, 255, 255, 0.2);
+
             flex-shrink: 0;
+
         }
+
+
 
         .color-popover {
+
             position: absolute;
+
             top: calc(100% + 5px);
+
             right: 0;
+
             width: 220px;
+
             background: var(--tab-bg);
+
             border: 1px solid var(--secondary);
+
             border-radius: 6px;
+
             padding: 12px;
+
             opacity: 0;
+
             pointer-events: none;
+
             transform: translateY(-10px);
+
             transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
             z-index: 9999;
+
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+
             display: flex;
+
             flex-direction: column;
+
             gap: 12px;
+
         }
+
+
 
         .color-container.open .color-popover {
+
             opacity: 1;
+
             pointer-events: all;
+
             transform: translateY(0);
+
         }
+
+
 
         .color-field {
+
             width: 100%;
+
             height: 130px;
+
             background-color: #f00;
+
             background-image: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, transparent);
+
             border-radius: 4px;
+
             border: 1px solid var(--secondary);
+
             position: relative;
+
             cursor: crosshair;
+
         }
+
+
 
         .color-cursor {
+
             width: 12px;
+
             height: 12px;
+
             border-radius: 50%;
+
             border: 2px solid #fff;
+
             box-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+
             position: absolute;
+
             top: 0;
+
             left: 100%;
+
             transform: translate(-50%, -50%);
+
             pointer-events: none;
+
         }
+
+
 
         .color-hue-rail {
+
             width: 100%;
+
             height: 14px;
+
             border-radius: 7px;
+
             position: relative;
+
             cursor: pointer;
+
             background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+
             border: 1px solid var(--secondary);
+
         }
+
+
 
         .color-hue-thumb {
+
             width: 14px;
+
             height: 14px;
+
             background: transparent;
+
             border: 2px solid #fff;
+
             border-radius: 50%;
+
             box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+
             position: absolute;
+
             left: 0;
+
             top: 50%;
+
             transform: translate(-50%, -50%);
+
             pointer-events: none;
+
         }
+
+
 
         .color-input-wrapper {
+
             display: flex;
+
             align-items: center;
+
             gap: 8px;
+
             border-top: 1px solid var(--secondary);
+
             padding-top: 10px;
+
         }
+
+
 
         .color-hash {
+
             color: var(--text-sub);
+
             font-size: 14px;
+
             font-weight: bold;
+
         }
+
+
 
         .color-hex-input {
+
             background: transparent;
+
             border: none;
+
             color: var(--text-color);
+
             width: 100%;
+
             font-family: var(--font-family);
+
             font-size: 13px;
+
             outline: none;
+
             text-transform: uppercase;
+
             letter-spacing: 1px;
+
         }
+
+        .color-hex-input { flex: 1; min-width: 0; }
+
+        .color-rgb-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 6px;
+            border: 1px solid var(--secondary);
+            border-radius: 4px;
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-sub);
+            cursor: pointer;
+            user-select: none;
+            background: transparent;
+            transition: 0.2s;
+            flex: 0 0 auto;
+        }
+        .color-rgb-toggle .rgb-box {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            border: 1px solid var(--secondary);
+            background: transparent;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+        }
+        .color-rgb-toggle:hover {
+            border-color: var(--text-sub);
+            color: var(--text-color);
+        }
+        .color-rgb-toggle.on {
+            border-color: var(--text-color);
+            color: var(--text-color);
+        }
+        .color-rgb-toggle.on .rgb-box {
+            background: linear-gradient(90deg, #ff3b3b, #ff9f1a, #ffe600, #2ecc71, #3aa0ff, #6a5cff, #b048ff, #ff5bd6);
+            border-color: transparent;
+        }
+
+
+
 
         #overlay-root {
+
             position: fixed;
+
             inset: 0;
+
             pointer-events: none;
+
             z-index: 10000;
+
         }
+
+
 
         .orion-notify-stack {
+
             position: fixed;
+
             width: min(360px, calc(100vw - (var(--notify-edge) + var(--notify-edge))));
+
             max-width: calc(100vw - (var(--notify-edge) + var(--notify-edge)));
+
             display: flex;
+
             flex-direction: column;
+
             gap: 12px;
+
             pointer-events: none;
+
             z-index: 10001;
+
         }
+
+
 
         .orion-notify {
+
             pointer-events: auto;
+
             position: relative;
+
             --notify-accent: color-mix(in srgb, var(--secondary), #fff 10%);
+
             background: var(--tab-bg);
+
             border: 1px solid rgba(255, 255, 255, 0.08);
+
             border-radius: 14px;
+
             box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+
             padding: 14px 16px;
+
             display: flex;
+
             flex-direction: column;
+
             gap: 12px;
+
             animation: orionNotifyIn 0.18s ease-out;
+
         }
+
+
 
         .orion-notify::before {
+
             content: '';
+
             position: absolute;
+
             left: 0;
+
             top: 12px;
+
             bottom: 12px;
+
             width: 2px;
+
             border-radius: 999px;
+
             background: linear-gradient(180deg, transparent, var(--notify-accent), transparent);
+
             opacity: 0.95;
+
             box-shadow: 0 0 16px color-mix(in srgb, var(--notify-accent), transparent 35%);
+
         }
+
+
 
         .orion-notify[data-variant="good"] {
+
             --notify-accent: #3AD98A;
+
         }
+
+
 
         .orion-notify[data-variant="bad"] {
+
             --notify-accent: #D96A6A;
+
         }
+
+
 
         .orion-notify[data-variant="warn"] {
+
             --notify-accent: #D9B45A;
+
         }
+
+
 
         .orion-notify-head {
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: flex-start;
+
             gap: 14px;
+
         }
+
+
 
         .orion-notify-head-text {
+
             flex: 1;
+
             min-width: 0;
+
             display: flex;
+
             flex-direction: column;
+
             gap: 6px;
+
         }
+
+
 
         .orion-notify-icon {
+
             width: 30px;
+
             height: 30px;
+
             display: grid;
+
             place-items: center;
+
             flex-shrink: 0;
+
             color: var(--notify-accent);
+
             filter: drop-shadow(0 0 10px color-mix(in srgb, var(--notify-accent), transparent 40%));
+
             opacity: 0.95;
+
             margin-top: -1px;
+
         }
+
+
 
         .orion-notify-icon i {
+
             font-size: 1.05em;
+
         }
+
+
 
         @keyframes orionNotifyIn {
+
             from {
+
                 transform: translateY(-6px);
+
                 opacity: 0;
+
             }
+
+
 
             to {
+
                 transform: translateY(0);
+
                 opacity: 1;
+
             }
+
         }
+
+
 
         .orion-notify-title {
+
             font-size: 12px;
+
             font-weight: 500;
+
             letter-spacing: 1.6px;
+
             text-transform: uppercase;
+
             color: var(--text-color);
+
             line-height: 1.2;
+
         }
+
+
 
         .orion-notify-sub {
+
             font-size: 12px;
+
             color: var(--text-sub);
+
             line-height: 1.25;
+
         }
+
+
 
         .orion-notify-body {
+
             font-size: 12px;
+
             color: var(--text-color);
+
             line-height: 1.45;
+
             white-space: pre-wrap;
+
         }
+
+
 
         .orion-notify-meta {
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
+
             gap: 12px;
+
             color: var(--text-sub);
+
             font-size: 12px;
+
         }
+
+
 
         .orion-notify-timer {
+
             font-variant-numeric: tabular-nums;
+
             letter-spacing: 1px;
+
             color: var(--text-color);
+
         }
+
+
 
         .orion-notify-progress {
+
             height: 2px;
+
             width: 100%;
+
             background: rgba(255, 255, 255, 0.08);
+
             border-radius: 999px;
+
             overflow: hidden;
+
         }
+
+
 
         .orion-notify-progress>div {
+
             height: 100%;
+
             width: 0%;
+
             background: var(--notify-accent);
+
             box-shadow: 0 0 10px color-mix(in srgb, var(--notify-accent), transparent 55%);
+
             transition: width 0.25s linear;
+
         }
+
+
 
         .orion-notify-actions {
+
             display: flex;
+
             justify-content: flex-end;
+
             gap: 10px;
+
             padding-top: 2px;
+
         }
+
+
 
         .orion-notify-btn {
+
             background: var(--input-bg);
+
             border: 1px solid rgba(255, 255, 255, 0.10);
+
             border-radius: 6px;
+
             padding: 7px 12px;
+
             color: var(--text-color);
+
             font-family: var(--font-family);
+
             font-size: 11px;
+
             cursor: pointer;
+
             transition: 0.2s;
+
             text-transform: uppercase;
+
             letter-spacing: 1px;
+
         }
+
+
 
         .orion-notify-btn:hover {
+
             background: var(--tab-hover);
+
             border-color: rgba(255, 255, 255, 0.16);
+
         }
+
+
 
         .orion-notify-btn.primary {
+
             border-color: var(--text-color);
+
         }
+
+
 
         body.Glassmorphism-active .orion-notify,
+
         body.Glassmorphism-active .orion-notify-btn {
+
             backdrop-filter: blur(10px) saturate(160%) !important;
+
             -webkit-backdrop-filter: blur(10px) saturate(160%) !important;
+
         }
+
+
 
         body.Glassmorphism-active .orion-notify {
+
             background: color-mix(in srgb, var(--tab-bg), transparent 10%) !important;
+
             border: 1px solid rgba(255, 255, 255, 0.08) !important;
+
         }
+
+
 
         body.Glassmorphism-active .orion-notify-btn {
+
             background: color-mix(in srgb, var(--input-bg), transparent 30%) !important;
+
             border: 1px solid rgba(255, 255, 255, 0.10) !important;
+
         }
+
+
 
         body.Glow-active .orion-notify {
+
             box-shadow: 0 0 var(--glow-spread) var(--glow-color), 0 18px 50px rgba(0, 0, 0, 0.55);
+
         }
+
     </style>
+
 </head>
 
+
+
 <body>
+
     <div id="overlay-root"></div>
+
     <div class="tabview-container" id="tabview">
+
         <div class="tabs" id="tabs">
+
             <div class="tab active" data-tab="tab1">
+
                 <i class="ph ph-house"></i>
+
                 <span class="tooltip">Home</span>
+
             </div>
+
             <div class="tab" data-tab="tab2">
+
                 <i class="ph ph-user-focus"></i>
+
                 <span class="tooltip">Dashboard</span>
+
             </div>
+
             <div class="tab" data-tab="tab3">
+
                 <i class="ph ph-tree-structure"></i>
+
                 <span class="tooltip">Manager</span>
+
             </div>
+
             <div class="tab" data-tab="tab4">
+
                 <i class="ph ph-faders"></i>
+
                 <span class="tooltip">Settings</span>
+
             </div>
+
         </div>
+
         <div class="toggle-notch" id="toggleNotch">
+
             <i class="fa-solid fa-chevron-up"></i>
+
         </div>
+
     </div>
+
     <div class="main-content">
+
         <div class="content-panel" id="panel">
+
             <div class="panel-scroll-area" id="contentInject">
+
             </div>
+
             <div class="footer">Eternal Softworks™</div>
+
         </div>
+
     </div>
+
     <script>
+
         
+
         const UI_CONFIG = %%UI_DATA%% || {
+
             "Font": "Jura",
+
             "PrimaryColor": "#101010",
+
             "SecondaryColor": "#252525",
+
             "BackgroundColor": "#0a0a0a",
+
             "TextColor": "#eaeaea",
+
             "GlowEnabled": false,
+
             "GlowColor": "#FFFFFF",
+
             "GlowIntensity": 1,
+
             "VisualDepthEnabled": false,
+
             "GlassmorphismEnabled": false,
+
             "NotificationLocation": "Top"
+
         };
+
         const FONT_LIST = %%FONT_LIST%% || ["Jura", "Roboto", "Open Sans", "Montserrat", "Lato"];
+
         const DEFAULT_UI_CONFIG = {
+
             "Font": "Jura",
+
             "PrimaryColor": "#101010",
+
             "SecondaryColor": "#252525",
+
             "BackgroundColor": "#0a0a0a",
+
             "TextColor": "#EAEAEA",
+
             "GlowEnabled": false,
+
             "GlowColor": "#FFFFFF",
+
             "GlowIntensity": 1,
+
             "VisualDepthEnabled": false,
+
             "GlassmorphismEnabled": false
+
         };
+
         const __orionNotifyState = new Map();
 
+
+
         function __orionClampText(str, maxLen) {
+
             if (typeof str !== 'string') return '';
+
             const t = str.trim();
+
             if (t.length <= maxLen) return t;
+
             return t.slice(0, Math.max(0, maxLen - 1)) + '…';
+
         }
+
+
 
         function __orionFormatTime(totalSeconds) {
+
             const s = Math.max(0, Math.floor(Number(totalSeconds) || 0));
+
             const m = Math.floor(s / 60);
+
             const r = s % 60;
+
             return `${m}:${String(r).padStart(2, '0')}`;
+
         }
+
+
 
         function __orionPositionNotifyStack(stack) {
+
             try {
+
                 const scrollArea = document.getElementById('contentInject');
+
                 if (scrollArea) {
+
                     const rr = scrollArea.getBoundingClientRect();
+
                     const visibleH = Math.max(0, Math.floor(rr.height || 0));
+
                     const vhalf = Math.max(220, Math.floor((visibleH - 20) / 2));
+
                     document.documentElement.style.setProperty('--subpanel-vhalf', `${vhalf}px`);
+
                 }
+
             } catch {}
+
             const s = stack || document.getElementById('orion-notify-stack');
+
             if (!s) return;
+
             const loc = String((UI_CONFIG && UI_CONFIG.NotificationLocation) || 'Top').toLowerCase();
+
             s.style.top = '';
+
             s.style.bottom = '';
+
             s.style.left = '';
+
             s.style.right = '';
+
             s.style.transform = '';
+
             const edge = 'var(--notify-edge)';
+
             const edge2 = '(var(--notify-edge) + var(--notify-edge))';
+
             let panelRect = null;
+
             try {
+
                 const panel = document.getElementById('panel');
+
                 if (panel) panelRect = panel.getBoundingClientRect();
+
             } catch {}
+
             if (!panelRect) {
+
                 panelRect = {
+
                     top: 0,
+
                     left: 0,
+
                     right: window.innerWidth,
+
                     bottom: window.innerHeight,
+
                     width: window.innerWidth,
+
                     height: window.innerHeight
+
                 };
+
             }
+
             const w = Math.max(0, Math.floor(panelRect.width || 0));
+
             const h = Math.max(0, Math.floor(panelRect.height || 0));
+
             const leftGap = Math.max(0, Math.floor(panelRect.left || 0));
+
             const topGap = Math.max(0, Math.floor(panelRect.top || 0));
+
             const rightGap = Math.max(0, Math.floor((window.innerWidth || 0) - (panelRect.right || 0)));
+
             const bottomGap = Math.max(0, Math.floor((window.innerHeight || 0) - (panelRect.bottom || 0)));
+
             s.style.width = `min(360px, calc(${w}px - ${edge2}))`;
+
             s.style.maxWidth = `calc(${w}px - ${edge2})`;
+
             s.style.maxHeight = `calc(${h}px - ${edge2})`;
+
             const topExpr = `calc(${topGap}px + ${edge})`;
+
             const leftExpr = `calc(${leftGap}px + ${edge})`;
+
             const rightExpr = `calc(${rightGap}px + ${edge})`;
+
             const bottomExpr = `calc(${bottomGap}px + ${edge})`;
+
             const centerX = Math.round((panelRect.left || 0) + (panelRect.width || 0) / 2);
+
             const centerY = Math.round((panelRect.top || 0) + (panelRect.height || 0) / 2);
+
             switch (loc) {
+
                 case 'top':
+
                 case 'top center':
+
                     s.style.top = topExpr;
+
                     s.style.left = `${centerX}px`;
+
                     s.style.transform = 'translateX(-50%)';
+
                     break;
+
                 case 'top right':
+
                     s.style.top = topExpr;
+
                     s.style.right = rightExpr;
+
                     break;
+
                 case 'center':
+
                 case 'middle':
+
                     s.style.top = `${centerY}px`;
+
                     s.style.left = `${centerX}px`;
+
                     s.style.transform = 'translate(-50%, -50%)';
+
                     break;
+
                 case 'bottom':
+
                 case 'bottom center':
+
                     s.style.bottom = bottomExpr;
+
                     s.style.left = `${centerX}px`;
+
                     s.style.transform = 'translateX(-50%)';
+
                     break;
+
                 case 'bottom left':
+
                     s.style.bottom = bottomExpr;
+
                     s.style.left = leftExpr;
+
                     break;
+
                 case 'bottom right':
+
                     s.style.bottom = bottomExpr;
+
                     s.style.right = rightExpr;
+
                     break;
+
                 case 'top left':
+
                 default:
+
                     s.style.top = topExpr;
+
                     s.style.left = leftExpr;
+
                     break;
+
             }
+
         }
+
+
 
         function __orionEnsureNotifyStack() {
+
             const overlayRoot = document.getElementById('overlay-root');
+
             if (!overlayRoot) return null;
+
             let stack = document.getElementById('orion-notify-stack');
+
             if (!stack) {
+
                 stack = document.createElement('div');
+
                 stack.id = 'orion-notify-stack';
+
                 stack.className = 'orion-notify-stack';
+
                 overlayRoot.appendChild(stack);
+
             }
+
             __orionPositionNotifyStack(stack);
+
             return stack;
+
         }
+
+
 
         function __orionStopNotification(id) {
+
             const state = __orionNotifyState.get(id);
+
             if (!state) return;
+
             try {
+
                 if (state.interval) clearInterval(state.interval);
+
             } catch {}
+
             try {
+
                 if (state.timeout) clearTimeout(state.timeout);
+
             } catch {}
+
             __orionNotifyState.delete(id);
+
         }
+
+
 
         function __orionRemoveNotification(id) {
+
             const stack = document.getElementById('orion-notify-stack');
+
             if (!stack) return;
+
             const cards = Array.from(stack.querySelectorAll('.orion-notify'));
+
             for (const el of cards) {
+
                 if (!id || el.dataset.id === id) {
+
                     const thisId = el.dataset.id;
+
                     el.remove();
+
                     if (thisId) __orionStopNotification(thisId);
+
                 }
+
             }
+
         }
+
+
 
         function __orionClearNotification() {
+
             __orionRemoveNotification(null);
+
         }
+
+
 
         function __orionInsertByPriority(stack, card) {
+
             const pr = parseInt(card.dataset.priority || '0', 10) || 0;
+
             const kids = Array.from(stack.children);
+
             const before = kids.find(k => {
+
                 const kpr = parseInt(k.dataset.priority || '0', 10) || 0;
+
                 return kpr < pr;
+
             });
+
             if (before) stack.insertBefore(card, before);
+
             else stack.appendChild(card);
+
         }
+
+
 
         function __orionNotify(payload) {
+
             if (!payload || typeof payload !== 'object') return;
+
             const stack = __orionEnsureNotifyStack();
+
             if (!stack) return;
+
             const type = String(payload.Type || '').toLowerCase();
+
             const variant = String(payload.Variant || '').toLowerCase();
+
             const id = __orionClampText(String(payload.Id || (type ? `type:${type}` : 'default')), 48) || 'default';
+
             const priority = Math.max(-9999, Math.min(9999, parseInt(payload.Priority, 10) || (type === 'timer' ? 100 : 20)));
+
             __orionRemoveNotification(id);
+
             const titleText = __orionClampText(payload.Text || 'Notification', 60);
+
             const subText = __orionClampText(payload.Subtext || '', 90);
+
             const card = document.createElement('div');
+
             card.className = 'orion-notify';
+
             card.dataset.id = id;
+
             card.dataset.priority = String(priority);
+
             if (type) card.dataset.type = type;
+
             if (variant) card.dataset.variant = variant;
+
             const head = document.createElement('div');
+
             head.className = 'orion-notify-head';
+
             const headText = document.createElement('div');
+
             headText.className = 'orion-notify-head-text';
+
             const title = document.createElement('div');
+
             title.className = 'orion-notify-title';
+
             title.textContent = titleText;
+
             headText.appendChild(title);
+
             if (subText) {
+
                 const sub = document.createElement('div');
+
                 sub.className = 'orion-notify-sub';
+
                 sub.textContent = subText;
+
                 headText.appendChild(sub);
+
             }
+
             head.appendChild(headText);
+
             const iconWrap = document.createElement('div');
+
             iconWrap.className = 'orion-notify-icon';
+
             const rawIcon = String(payload.Icon || '').trim();
+
             const iconClass = rawIcon.length > 0 ? rawIcon : (type === 'timer' ? 'fa-regular fa-clock' : 'fa-regular fa-bell');
+
             const iconEl = document.createElement('i');
+
             iconClass.split(/\s+/).filter(Boolean).forEach(c => iconEl.classList.add(c));
+
             iconWrap.appendChild(iconEl);
+
             head.appendChild(iconWrap);
+
             card.appendChild(head);
+
             const infoText = (type === 'timer' ? payload.Timer?.Text : payload.Body) || payload.InfoText || '';
+
             if (String(infoText || '').trim().length > 0) {
+
                 const body = document.createElement('div');
+
                 body.className = 'orion-notify-body';
+
                 body.textContent = __orionClampText(String(infoText), 175);
+
                 card.appendChild(body);
+
             }
+
             let timerEl = null;
+
             let progressInner = null;
+
             if (type === 'timer') {
+
                 const meta = document.createElement('div');
+
                 meta.className = 'orion-notify-meta';
+
                 const left = document.createElement('div');
+
                 left.textContent = __orionClampText(payload.Timer?.Label || 'Auto action in', 24);
+
                 timerEl = document.createElement('div');
+
                 timerEl.className = 'orion-notify-timer';
+
                 meta.appendChild(left);
+
                 meta.appendChild(timerEl);
+
                 card.appendChild(meta);
+
                 const progress = document.createElement('div');
+
                 progress.className = 'orion-notify-progress';
+
                 progressInner = document.createElement('div');
+
                 progress.appendChild(progressInner);
+
                 card.appendChild(progress);
+
             }
+
             const options = payload.Options;
+
             const actions = document.createElement('div');
+
             actions.className = 'orion-notify-actions';
+
             let actionCount = 0;
+
             if (options && typeof options === 'object') {
+
                 const count = Math.max(0, parseInt(options.Count, 10) || 0);
+
                 const table = options.Options || {};
+
                 for (let i = 1; i <= count; i++) {
+
                     const entry = table[i] || table[String(i)];
+
                     if (!entry || entry.length < 2) continue;
+
                     const label = __orionClampText(String(entry[0] ?? ''), 20);
+
                     const flag = String(entry[1] ?? '');
+
                     if (!label || !flag) continue;
+
                     const btn = document.createElement('button');
+
                     btn.type = 'button';
+
                     btn.className = 'orion-notify-btn' + (actionCount === 0 ? ' primary' : '');
+
                     btn.textContent = label;
+
                     btn.addEventListener('click', () => {
+
                         __orionRemoveNotification(id);
+
                         updateBackend(flag, true);
+
                     });
+
                     actions.appendChild(btn);
+
                     actionCount++;
+
                 }
+
             }
+
             if (actionCount > 0) {
+
                 card.appendChild(actions);
+
             }
+
             __orionInsertByPriority(stack, card);
+
             const state = {
+
                 interval: null,
+
                 timeout: null
+
             };
+
             __orionNotifyState.set(id, state);
+
             const autoClose = Math.max(0, parseInt(payload.AutoClose, 10) || 0);
+
             if (autoClose > 0 && type !== 'timer') {
+
                 state.timeout = setTimeout(() => __orionRemoveNotification(id), autoClose * 1000);
+
             }
+
             if (type === 'timer') {
+
                 const total = Math.max(0, parseInt(payload.Timer?.Time ?? payload.Time, 10) || 0);
+
                 let remaining = total;
+
                 const autoFlag = payload.Timer?.AutoFlag || payload.AutoFlag;
+
                 const tick = () => {
+
                     if (timerEl) timerEl.textContent = __orionFormatTime(remaining);
+
                     if (progressInner) {
+
                         const pct = total > 0 ? (remaining / total) * 100 : 0;
+
                         progressInner.style.width = `${pct}%`;
+
                     }
+
                     if (remaining <= 0) {
+
                         __orionRemoveNotification(id);
+
                         if (autoFlag) updateBackend(String(autoFlag), true);
+
                         return;
+
                     }
+
                     remaining -= 1;
+
                 };
+
                 tick();
+
                 state.interval = setInterval(tick, 1000);
+
             }
+
         }
+
         window.__orionNotify = __orionNotify;
+
         window.__orionClearNotification = __orionClearNotification;
+
         window.addEventListener('resize', () => __orionPositionNotifyStack());
 
+
+
         function openPopover(popover, trigger) {
+
             const rect = trigger.getBoundingClientRect();
+
             popover.style.position = 'absolute';
+
             popover.style.top = `${rect.bottom + 6}px`;
+
             popover.style.left = `${rect.left}px`;
+
             document.getElementById('overlay-root').appendChild(popover);
+
             popover.style.pointerEvents = 'auto';
+
         }
+
+
 
         function adjustColor(color, amount) {
+
             let usePound = false;
+
             if (color[0] == "#") {
+
                 color = color.slice(1);
+
                 usePound = true;
+
             }
+
             if (color.length === 3) color = color.split('').map(c => c + c).join('');
+
             let num = parseInt(color, 16);
+
             let r = (num >> 16) + amount;
+
             let g = ((num >> 8) & 0x00FF) + amount;
+
             let b = (num & 0x0000FF) + amount;
+
             if (r > 255) r = 255;
+
             else if (r < 0) r = 0;
+
             if (g > 255) g = 255;
+
             else if (g < 0) g = 0;
+
             if (b > 255) b = 255;
+
             else if (b < 0) b = 0;
+
             return (usePound ? "#" : "") + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0').toUpperCase();
+
         }
+
+
 
         function updateBackend(flag, value) {
+
             if (flag in UI_CONFIG) {
+
                 UI_CONFIG[flag] = value;
+
                 applyTheme();
+
             }
+
             const payload = {};
+
             payload[flag] = value;
+
             document.title = "recv://" + JSON.stringify(payload);
+
         }
+
+
 
         function applyTheme() {
+
             const root = document.documentElement;
+
             const body = document.body;
+
             if (UI_CONFIG.BackgroundColor) root.style.setProperty('--bg-color', UI_CONFIG.BackgroundColor);
+
             if (UI_CONFIG.PrimaryColor) root.style.setProperty('--primary', UI_CONFIG.PrimaryColor);
+
             if (UI_CONFIG.SecondaryColor) root.style.setProperty('--secondary', UI_CONFIG.SecondaryColor);
+
             if (UI_CONFIG.TextColor) root.style.setProperty('--text-color', UI_CONFIG.TextColor);
+
             body.classList.toggle('visual-depth-active', UI_CONFIG.VisualDepthEnabled);
+
             body.classList.toggle('Glassmorphism-active', UI_CONFIG.GlassmorphismEnabled);
+
             body.classList.toggle('Glow-active', UI_CONFIG.GlowEnabled);
+
             if (UI_CONFIG.GlowEnabled) {
+
                 root.style.setProperty('--glow-color', UI_CONFIG.GlowColor);
+
                 const spread = Math.max(0, UI_CONFIG.GlowIntensity * 3.5);
+
                 root.style.setProperty('--glow-spread', spread + 'px');
+
             } else {
+
                 root.style.setProperty('--glow-color', 'transparent');
+
                 root.style.setProperty('--glow-spread', '0px');
+
             }
+
             if (UI_CONFIG.PrimaryColor) {
+
                 const p = UI_CONFIG.PrimaryColor;
+
                 root.style.setProperty('--panel-bg', p);
+
                 root.style.setProperty('--sub-panel-bg', adjustColor(p, 8));
+
                 root.style.setProperty('--input-bg', adjustColor(p, 16));
+
                 root.style.setProperty('--tab-bg', adjustColor(p, -8));
+
                 root.style.setProperty('--tab-hover', adjustColor(p, 12));
+
             }
+
             if (UI_CONFIG.Font && UI_CONFIG.Font.length > 0) {
+
                 root.style.setProperty('--font-family', `"${UI_CONFIG.Font}", sans-serif`);
+
                 const link = document.getElementById('dynamic-font');
+
                 const fontName = UI_CONFIG.Font.replace(/ /g, '+');
+
                 const newHref = `https://fonts.googleapis.com/css2?family=${fontName}&display=swap`;
+
                 if (link.href !== newHref) {
+
                     link.href = newHref;
+
                 }
+
             }
+
             try {
+
                 __orionPositionNotifyStack();
+
             } catch {}
+
         }
+
+
 
         const TAB_DATA = {
+
             tab1: {
+
                 title: 'Home',
+
                 grid: []
+
             },
+
             tab2: {
+
                 title: 'Dashboard',
+
                 grid: []
+
             },
+
             tab3: {
+
                 title: 'Manager',
+
                 grid: []
+
             },
+
             tab4: {
+
                 title: 'Settings',
+
                 grid: [{
+
                     header: 'Application',
+
                     span: 'fill',
+
                     controls: [{
+
                         ui: 'button',
+
                         label: 'Reset Application',
+
                         type: 'double',
+
                         text: 'Reset',
+
                         secondarytext: 'Confirm?',
+
                         flag: 'ResetApplication'
+
                     }, ]
+
                 }, {
+
                     header: 'Theme',
+
                     span: 'hhalf',
+
                     controls: [{
+
                         ui: 'colorpicker',
+
                         label: 'Background Color',
+
                         flag: 'BackgroundColor'
+
                     }, {
+
                         ui: 'colorpicker',
+
                         label: 'Primary Color',
+
                         flag: 'PrimaryColor'
+
                     }, {
+
                         ui: 'colorpicker',
+
                         label: 'Accent Color',
+
                         flag: 'SecondaryColor'
+
                     }, {
+
                         ui: 'colorpicker',
+
                         label: 'Text Color',
+
                         flag: 'TextColor'
+
                     }, {
+
                         ui: 'dropdown',
+
                         label: 'UI Font',
+
                         type: 'single',
+
                         options: FONT_LIST,
+
                         flag: 'Font'
+
                     }, {
+
                         ui: 'divider'
+
                     }, {
+
                         ui: 'toggle',
+
                         label: 'UI Glassmorphism',
+
                         flag: 'GlassmorphismEnabled'
+
                     }, {
+
                         ui: 'toggle',
+
                         label: 'UI Depth Effects',
+
                         flag: 'VisualDepthEnabled'
+
                     }, {
+
                         ui: 'toggle',
+
                         label: 'UI Glow',
+
                         flag: 'GlowEnabled'
+
                     }, {
+
                         ui: 'colorpicker',
+
                         label: 'Glow Color',
+
                         flag: 'GlowColor'
+
                     }, {
+
                         ui: 'slider',
+
                         label: 'Glow Intensity',
+
                         min: 0,
+
                         max: 2.5,
+
                         step: 0.1,
+
                         flag: 'GlowIntensity'
+
                     }, {
+
                         ui: 'button',
+
                         label: 'Reset Theme',
+
                         type: 'double',
+
                         text: 'Reset',
+
                         secondarytext: 'Confirm?',
+
                         flag: 'ResetTheme'
+
                     }, ]
+
                 }, {
+
                     header: 'Config',
+
                     span: 'hhalf',
+
                     controls: [{
+
                         ui: 'dropdown',
+
                         label: 'Notification Position',
+
                         type: 'single',
+
                         options: ["Top", "Top Left", "Top Right", "Center", "Bottom", "Bottom Left", "Bottom Right"],
+
                         flag: 'NotificationLocation'
+
                     }, ]
+
                 }, ]
+
             }
+
         };
 
+
+
         let currentTabIndex = 0;
+
         let isDraggingColor = false;
+
         let isDraggingHue = false;
+
         let activeColorContainer = null;
 
+
+
         function handleDropdownScroll(e, el) {
+
             e.preventDefault();
+
             el.scrollLeft += e.deltaY;
+
         }
+
+
 
         function validateInput(input, type, flag) {
+
             if (type === 'num') input.value = input.value.replace(/[^0-9.]/g, '');
+
             if (type === 'str') input.value = input.value.replace(/[^a-zA-Z\s]/g, '');
+
             updateBackend(flag, input.value);
+
         }
+
+
 
         function updateSliderTooltip(input, flag) {
+
             const val = parseFloat(input.value);
+
             const min = parseFloat(input.min);
+
             const max = parseFloat(input.max);
+
             const percent = (val - min) / (max - min) * 100;
+
             const tooltip = input.parentElement.querySelector('.slider-tooltip');
+
             if (tooltip) {
+
                 tooltip.textContent = val;
+
                 const correction = 8 - (percent * 0.16);
+
                 tooltip.style.left = `calc(${percent}% + ${correction}px)`;
+
             }
+
             updateBackend(flag, val);
+
         }
+
+
 
         function handleButtonClick(el, flag) {
+
             const type = el.dataset.type;
+
             if (type === 'double') {
+
                 if (el.dataset.confirming === 'true') {
+
                     clearTimeout(el.timer);
+
                     el.dataset.confirming = 'false';
+
                     el.textContent = el.dataset.text;
+
                     if (flag === 'ResetTheme') {
+
                         Object.assign(UI_CONFIG, DEFAULT_UI_CONFIG);
+
                         applyTheme();
+
                         const activeTabKey = document.querySelector('.tab.active').getAttribute('data-tab');
+
                         document.getElementById('contentInject').innerHTML = buildPanel(activeTabKey);
+
                         document.title = "recv://" + JSON.stringify(DEFAULT_UI_CONFIG);
+
                         return;
+
                     }
+
                     if (flag) updateBackend(flag, true);
+
                 } else {
+
                     el.dataset.confirming = 'true';
+
                     el.textContent = el.dataset.secondarytext;
+
                     el.timer = setTimeout(() => {
+
                         el.dataset.confirming = 'false';
+
                         el.textContent = el.dataset.text;
+
                     }, 2500);
+
                 }
+
             } else {
+
                 if (flag === 'ResetTheme') {
+
                     Object.assign(UI_CONFIG, DEFAULT_UI_CONFIG);
+
                     applyTheme();
+
                     const activeTabKey = document.querySelector('.tab.active').getAttribute('data-tab');
+
                     document.getElementById('contentInject').innerHTML = buildPanel(activeTabKey);
+
                     document.title = "recv://" + JSON.stringify(DEFAULT_UI_CONFIG);
+
                     return;
+
                 }
+
                 if (flag) {
+
                     updateBackend(flag, true);
+
                 } else {
+
                     console.log("Button clicked (No flag assigned)");
+
                 }
+
             }
+
         }
+
+
 
         function hsvToRgb(h, s, v) {
+
             let r, g, b;
+
             let i = Math.floor(h * 6);
+
             let f = h * 6 - i;
+
             let p = v * (1 - s);
+
             let q = v * (1 - f * s);
+
             let t = v * (1 - (1 - f) * s);
+
             switch (i % 6) {
+
                 case 0:
+
                     r = v, g = t, b = p;
+
                     break;
+
                 case 1:
+
                     r = q, g = v, b = p;
+
                     break;
+
                 case 2:
+
                     r = p, g = v, b = t;
+
                     break;
+
                 case 3:
+
                     r = p, g = q, b = v;
+
                     break;
+
                 case 4:
+
                     r = t, g = p, b = v;
+
                     break;
+
                 case 5:
+
                     r = v, g = p, b = q;
+
                     break;
+
             }
+
             return {
+
                 r: Math.round(r * 255),
+
                 g: Math.round(g * 255),
+
                 b: Math.round(b * 255)
+
             };
+
         }
+
+
 
         function rgbToHex(r, g, b) {
+
             return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+
         }
 
+
+
         function hexToHsv(hex) {
+
             hex = hex.replace('#', '');
+
             if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+
             let r = parseInt(hex.substring(0, 2), 16) / 255;
+
             let g = parseInt(hex.substring(2, 4), 16) / 255;
+
             let b = parseInt(hex.substring(4, 6), 16) / 255;
+
             let max = Math.max(r, g, b),
+
                 min = Math.min(r, g, b);
+
             let h, s, v = max;
+
             let d = max - min;
+
             s = max === 0 ? 0 : d / max;
+
             if (max === min) {
+
                 h = 0;
+
             } else {
+
                 switch (max) {
+
                     case r:
+
                         h = (g - b) / d + (g < b ? 6 : 0);
+
                         break;
+
                     case g:
+
                         h = (b - r) / d + 2;
+
                         break;
+
                     case b:
+
                         h = (r - g) / d + 4;
+
                         break;
+
                 }
+
                 h /= 6;
+
             }
+
             return {
+
                 h,
+
                 s,
+
                 v
+
             };
+
+        }
+
+
+
+        
+        const RGB_CYCLE_HUES = [0, 30, 55, 120, 210, 250, 280, 320].map(h => h / 360);
+        const RGB_CYCLE_INTERVAL = 300;
+        const __rgbCycleMap = new WeakMap();
+
+        function stopRgbCycle(container, keepToggle) {
+            if (!container) return;
+            const state = __rgbCycleMap.get(container);
+            if (state && state.timer) {
+                clearInterval(state.timer);
+            }
+            __rgbCycleMap.delete(container);
+            if (!keepToggle) {
+                const toggle = container.querySelector('.color-rgb-toggle');
+                if (toggle) toggle.classList.remove('on');
+            }
+        }
+
+        function startRgbCycle(container) {
+            if (!container) return;
+            stopRgbCycle(container, true);
+            let index = 0;
+            const apply = () => {
+                const h = RGB_CYCLE_HUES[index % RGB_CYCLE_HUES.length];
+                updateColorUIFromHSV(container, h, 1, 1);
+                const flag = container.dataset.flag;
+                if (flag) {
+                    const hex = container.querySelector('.color-hex-input').value;
+                    updateBackend(flag, ('#' + hex).toUpperCase());
+                }
+                index += 1;
+            };
+            apply();
+            const timer = setInterval(apply, RGB_CYCLE_INTERVAL);
+            __rgbCycleMap.set(container, { timer });
+        }
+
+        function toggleRgbCycle(el) {
+            const container = el.closest('.color-container');
+            if (!container) return;
+            const isOn = el.classList.toggle('on');
+            if (isOn) {
+                startRgbCycle(container);
+            } else {
+                stopRgbCycle(container);
+            }
         }
 
         function toggleColorPicker(el) {
+
             const container = el.parentElement;
+
             const controlItem = container.closest('.control-item');
+
             const subPanel = container.closest('.sub-panel');
+
             const isOpen = container.classList.contains('open');
+
             closeAllPopovers();
+
             if (!isOpen) {
+
                 container.classList.add('open');
+
                 el.classList.add('active');
+
                 if (controlItem) {
+
                     controlItem.style.zIndex = '100';
+
                     controlItem.style.position = 'relative';
+
                 }
+
                 if (subPanel) subPanel.classList.add('popout-open');
+
                 const hex = container.querySelector('.color-hex-input').value;
+
                 const hsv = hexToHsv(hex);
+
                 updateColorUIFromHSV(container, hsv.h, hsv.s, hsv.v);
+
             }
+
         }
+
+
 
         function handleColorDrag(e, container, type) {
+            stopRgbCycle(container);
+
             const field = container.querySelector('.color-field');
+
             const hueRail = container.querySelector('.color-hue-rail');
+
             const rect = (type === 'field' ? field : hueRail).getBoundingClientRect();
+
             let x = e.clientX - rect.left;
+
             let y = e.clientY - rect.top;
+
             x = Math.max(0, Math.min(x, rect.width));
+
             y = Math.max(0, Math.min(y, rect.height));
+
             let h = parseFloat(container.dataset.h || 0);
+
             let s = parseFloat(container.dataset.s || 1);
+
             let v = parseFloat(container.dataset.v || 1);
+
             if (type === 'hue') {
+
                 h = x / rect.width;
+
             } else {
+
                 s = x / rect.width;
+
                 v = 1 - (y / rect.height);
+
             }
+
             updateColorUIFromHSV(container, h, s, v);
+
         }
+
+
 
         function updateColorUIFromHSV(container, h, s, v) {
+
             container.dataset.h = h;
+
             container.dataset.s = s;
+
             container.dataset.v = v;
+
             const rgb = hsvToRgb(h, s, v);
+
             const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+
             const pureHueRgb = hsvToRgb(h, 1, 1);
+
             const pureHueHex = rgbToHex(pureHueRgb.r, pureHueRgb.g, pureHueRgb.b);
+
             container.querySelector('.color-preview').style.background = hex;
+
             container.querySelector('.color-hex-input').value = hex.replace('#', '');
+
             container.querySelector('.color-field').style.backgroundColor = pureHueHex;
+
             const cursor = container.querySelector('.color-cursor');
+
             cursor.style.left = (s * 100) + '%';
+
             cursor.style.top = ((1 - v) * 100) + '%';
+
             const thumb = container.querySelector('.color-hue-thumb');
+
             thumb.style.left = (h * 100) + '%';
+
             const flag = container.dataset.flag;
+
             if (flag in UI_CONFIG) {
+
                 const root = document.documentElement;
+
                 if (flag === 'PrimaryColor') {
+
                     const p = hex;
+
                     root.style.setProperty('--primary', p);
+
                     root.style.setProperty('--panel-bg', p);
+
                     root.style.setProperty('--sub-panel-bg', adjustColor(p, 8));
+
                     root.style.setProperty('--input-bg', adjustColor(p, 16));
+
                     root.style.setProperty('--tab-bg', adjustColor(p, -8));
+
                     root.style.setProperty('--tab-hover', adjustColor(p, 12));
+
                 } else if (flag === 'SecondaryColor') {
+
                     root.style.setProperty('--secondary', hex);
+
                 } else if (flag === 'BackgroundColor') {
+
                     root.style.setProperty('--bg-color', hex);
+
                 } else if (flag === 'TextColor') {
+
                     root.style.setProperty('--text-color', hex);
+
                 } else if (flag === 'GlowColor') {
+
                     root.style.setProperty('--glow-color', hex);
+
                 }
+
             }
+
         }
+
+
 
         function updateColorFromInput(input) {
+
             let val = input.value;
+
             if (!val.startsWith('#')) val = '#' + val;
+
             if (/^#[0-9A-F]{6}$/i.test(val)) {
+
                 const hsv = hexToHsv(val);
+
                 const container = input.closest('.color-container');
+                stopRgbCycle(container);
+
                 updateColorUIFromHSV(container, hsv.h, hsv.s, hsv.v);
+
                 const flag = container.dataset.flag;
+
                 updateBackend(flag, val.toUpperCase());
+
             }
+
         }
+
+
 
         function handleToggleClick(el, flag) {
+
             el.classList.toggle('on');
+
             const isOn = el.classList.contains('on');
+
             updateBackend(flag, isOn);
+
         }
+
         window.addEventListener('mousedown', (e) => {
+
             const colorField = e.target.closest('.color-field');
+
             const hueRail = e.target.closest('.color-hue-rail');
+
             if (colorField) {
+
                 isDraggingColor = true;
+
                 activeColorContainer = colorField.closest('.color-container');
+
                 handleColorDrag(e, activeColorContainer, 'field');
+
             } else if (hueRail) {
+
                 isDraggingHue = true;
+
                 activeColorContainer = hueRail.closest('.color-container');
+
                 handleColorDrag(e, activeColorContainer, 'hue');
+
             }
+
         });
+
         window.addEventListener('mousemove', (e) => {
+
             if (isDraggingColor && activeColorContainer) {
+
                 handleColorDrag(e, activeColorContainer, 'field');
+
             }
+
             if (isDraggingHue && activeColorContainer) {
+
                 handleColorDrag(e, activeColorContainer, 'hue');
+
             }
+
         });
+
         window.addEventListener('mouseup', () => {
+
             if ((isDraggingColor || isDraggingHue) && activeColorContainer) {
+
                 const hex = activeColorContainer.querySelector('.color-hex-input').value;
+
                 const flag = activeColorContainer.dataset.flag;
+
                 updateBackend(flag, "#" + hex);
+
             }
+
             isDraggingColor = false;
+
             isDraggingHue = false;
+
             activeColorContainer = null;
+
         });
+
+
 
         function toggleDropdown(el) {
+
             const container = el.parentElement;
+
             const controlItem = container.closest('.control-item');
+
             const subPanel = container.closest('.sub-panel');
+
             const isOpen = container.classList.contains('open');
+
             closeAllPopovers();
+
             if (!isOpen) {
+
                 container.classList.add('open');
+
                 el.classList.add('active');
+
                 if (controlItem) {
+
                     controlItem.style.zIndex = '100';
+
                     controlItem.style.position = 'relative';
+
                 }
+
                 if (subPanel) subPanel.classList.add('popout-open');
+
             }
+
         }
+
+
 
         function selectOption(el, value) {
+
             const container = el.closest('.dropdown-container');
+
             const display = container.querySelector('.dropdown-selected span');
+
             const isMulti = container.dataset.type === 'multi';
+
             const flag = container.dataset.flag;
+
             if (isMulti) {
+
                 el.classList.toggle('selected');
+
                 const selected = Array.from(container.querySelectorAll('.dropdown-option.selected')).map(o => o.textContent);
+
                 display.textContent = selected.length > 0 ? selected.join(', ') : 'None';
+
                 display.scrollLeft = 0;
+
                 updateBackend(flag, selected);
+
             } else {
+
                 display.textContent = value;
+
                 container.querySelectorAll('.dropdown-option').forEach(opt => opt.classList.remove('selected'));
+
                 el.classList.add('selected');
+
                 updateBackend(flag, value);
+
                 closeAllPopovers();
+
             }
+
         }
+
+
 
         function closeAllPopovers() {
+
             document.querySelectorAll('.dropdown-container.open, .color-container.open').forEach(d => {
+
                 d.classList.remove('open');
+
                 const trigger = d.querySelector('.dropdown-selected, .color-trigger');
+
                 if (trigger) trigger.classList.remove('active');
+
                 const controlItem = d.closest('.control-item');
+
                 if (controlItem) {
+
                     controlItem.style.zIndex = '';
+
                     controlItem.style.position = '';
+
                 }
+
                 const subPanel = d.closest('.sub-panel');
+
                 if (subPanel) subPanel.classList.remove('popout-open');
+
             });
+
         }
+
         window.addEventListener('click', function(e) {
+
             if (!e.target.closest('.dropdown-container') && !e.target.closest('.color-container') && !isDraggingColor && !isDraggingHue) {
+
                 closeAllPopovers();
+
             }
+
         });
 
+
+
         function normalizeTooltipDirection(dir) {
+
             return String(dir || 'top').toLowerCase() === 'bottom' ? 'bottom' : 'top';
+
         }
+
+
 
         function getTooltipConfig(source) {
+
             if (!source) return null;
+
             const enabled = source.Tooltip ?? source.tooltip ?? false;
+
             if (!enabled) return null;
+
             const text = source.TooltipText ?? source.tooltipText ?? '';
+
             if (text === undefined || text === null || String(text).trim() === '') return null;
+
             const dir = normalizeTooltipDirection(source.TooltipDirection ?? source.tooltipDirection);
+
             return {
+
                 text: String(text),
+
                 dir
+
             };
+
         }
+
+
 
         function tooltipHtml(config) {
+
             if (!config) return '';
+
             return `<span class="ui-tooltip" data-dir="${config.dir}">${config.text}</span>`;
+
         }
+
+
 
         function tableToList(table) {
+
             if (!table) return [];
+
             if (Array.isArray(table)) return table;
+
             if (typeof table === 'object') {
+
                 return Object.keys(table)
+
                     .sort((a, b) => Number(a) - Number(b))
+
                     .map(key => table[key]);
+
             }
+
             return [];
+
         }
+
+
 
         function buildIconPanel(ctrl) {
+
             const table = ctrl.buttons ?? ctrl.Buttons ?? ctrl.PanelButtons ?? ctrl.panelButtons ?? ctrl.Table ?? ctrl.table;
+
             const list = tableToList(table);
+
             let count = Number(ctrl.count ?? ctrl.Count ?? list.length ?? 0);
+
             if (!Number.isFinite(count) || count < 0) count = list.length;
+
             const items = list.slice(0, count > 0 ? count : list.length);
+
             if (count > items.length) {
+
                 for (let i = items.length; i < count; i++) items.push({});
+
             }
+
             const finalCount = count > 0 ? count : items.length;
+
             const panelFlag = ctrl.flag ?? ctrl.Flag ?? '';
+
             let html = `<div class="icon-panel" data-count="${finalCount}">`;
+
             items.forEach((btn, idx) => {
+
                 let icon = '';
+
                 let tipEnabled = false;
+
                 let tipText = '';
+
                 let tipDir = 'top';
+
                 let flag = '';
+
                 let value = '';
+
                 if (Array.isArray(btn)) {
+
                     icon = btn[0] ?? '';
+
                     tipEnabled = !!btn[1];
+
                     tipText = btn[2] ?? '';
+
                     tipDir = btn[3] ?? 'top';
+
                 } else if (btn && typeof btn === 'object') {
+
                     icon = btn.icon ?? btn.Icon ?? '';
+
                     tipEnabled = btn.tooltip ?? btn.Tooltip ?? false;
+
                     tipText = btn.tooltipText ?? btn.TooltipText ?? '';
+
                     tipDir = btn.tooltipDirection ?? btn.TooltipDirection ?? 'top';
+
                     flag = btn.flag ?? btn.Flag ?? '';
+
                     value = btn.value ?? btn.Value ?? '';
+
                 }
+
                 const dir = normalizeTooltipDirection(tipDir);
+
                 const tipCfg = tipEnabled ? {
+
                     text: String(tipText ?? ''),
+
                     dir
+
                 } : null;
+
                 const tipMarkup = tipCfg && tipCfg.text.trim().length > 0 ? tooltipHtml(tipCfg) : '';
+
                 const pos = finalCount > 0 ? ((idx + 1) / (finalCount + 1)) * 100 : 50;
+
                 const useFlag = flag || panelFlag;
+
                 let dataAttrs = `style="left: ${pos}%;"`;
+
                 if (useFlag) {
+
                     dataAttrs += ` data-flag="${useFlag}"`;
+
                     const val = value !== '' && value !== null && value !== undefined ? value : (panelFlag ? (idx + 1) : '');
+
                     if (val !== '' && val !== null && val !== undefined) {
+
                         dataAttrs += ` data-value="${String(val)}"`;
+
                     }
+
                 }
+
                 html += `<button class="icon-panel-btn ${tipMarkup ? 'has-tooltip' : ''}" ${dataAttrs} onclick="handlePanelIconClick(this)">${icon}${tipMarkup}</button>`;
+
             });
+
             html += `</div>`;
+
             return html;
+
         }
+
+
 
         function handlePanelIconClick(el) {
+
             const flag = el.dataset.flag;
+
             if (!flag) return;
+
             let value = el.dataset.value;
+
             if (value === undefined) value = true;
+
             else if (value === 'true' || value === 'false') value = value === 'true';
+
             else if (value !== '' && !isNaN(value)) value = Number(value);
+
             updateBackend(flag, value);
+
         }
+
+
 
         function buildPanel(key) {
+
             const data = TAB_DATA[key];
+
             let html = `<h2 class="panel-title">${data.title}</h2>`;
+
             html += `<div class="sub-panel-grid">`;
+
             data.grid.forEach(sub => {
+
                 html += `<div class="sub-panel ${sub.span}"><div class="sub-header">${sub.header}</div>`;
+
                 sub.controls.forEach(ctrl => {
+
                     if (ctrl.ui === 'divider') {
+
                         html += `<div class="divider"></div>`;
+
                         return;
+
                     }
+
                     const tip = getTooltipConfig(ctrl);
+
                     const tipMarkup = tooltipHtml(tip);
+
                     const controlClass = tipMarkup ? 'control-item has-tooltip' : 'control-item';
+
                     html += `<div class="${controlClass}"><label>${ctrl.label}</label>`;
+
                     let currentVal = UI_CONFIG[ctrl.flag];
+
                     if (currentVal === undefined) currentVal = "";
+
                     if (ctrl.ui === 'toggle') {
+
                         html += `<div class="switch ${currentVal?'on':''}" onclick="handleToggleClick(this, '${ctrl.flag}')"></div>`;
+
                     } else if (ctrl.ui === 'input') {
+
                         html += `<input class="input" type="text" value="${currentVal}" oninput="validateInput(this, '${ctrl.type}', '${ctrl.flag}')">`;
+
                     } else if (ctrl.ui === 'slider') {
+
                         html += `
+
                         <div class="slider-wrapper">
+
                             <input type="range"
+
                                    min="${ctrl.min}" max="${ctrl.max}" step="${ctrl.step}" value="${currentVal}"
+
                                    oninput="updateSliderTooltip(this, '${ctrl.flag}')"
+
                                    onmouseover="updateSliderTooltip(this, '${ctrl.flag}')">
+
                             <div class="slider-tooltip">${currentVal}</div>
+
                         </div>`;
+
                     } else if (ctrl.ui === 'button') {
+
                         const type = ctrl.type || 'single';
+
                         html += `<button class="button"
+
                                         data-type="${type}"
+
                                         data-text="${ctrl.text || 'Action'}"
+
                                         data-secondarytext="${ctrl.secondarytext || ''}"
+
                                         onclick="handleButtonClick(this, '${ctrl.flag || ''}')">${ctrl.text || 'Action'}</button>`;
+
                     } else if (ctrl.ui === 'panel' || ctrl.ui === 'iconpanel') {
+
                         html += buildIconPanel(ctrl);
+
                     } else if (ctrl.ui === 'dropdown') {
+
                         const isArr = Array.isArray(currentVal);
+
                         const optionsHtml = ctrl.options.map(opt => {
+
                             const isSelected = isArr ? currentVal.includes(opt) : opt === currentVal;
+
                             return `<div class="dropdown-option ${isSelected ? 'selected' : ''}" onclick="selectOption(this, '${opt}')">${opt}</div>`;
+
                         }).join('');
+
                         html += `
+
                         <div class="dropdown-container" data-type="${ctrl.type}" data-flag="${ctrl.flag}">
+
                             <div class="dropdown-selected" onclick="toggleDropdown(this)">
+
                                 <span onwheel="handleDropdownScroll(event, this)">${isArr ? (currentVal.length?currentVal.join(', '):'None') : currentVal}</span>
+
                                 <i class="fa-solid fa-chevron-down"></i>
+
                             </div>
+
                             <div class="dropdown-options">${optionsHtml}</div>
+
                         </div>`;
+
                     } else if (ctrl.ui === 'colorpicker') {
+
                         html += `
+
                         <div class="color-container" data-h="0" data-s="1" data-v="1" data-flag="${ctrl.flag}">
+
                             <div class="color-trigger" onclick="toggleColorPicker(this)">
+
                                 <div class="color-preview" style="background: ${currentVal}"></div>
+
                             </div>
+
                             <div class="color-popover">
+
                                 <div class="color-field">
+
                                     <div class="color-cursor"></div>
+
                                 </div>
+
                                 <div class="color-hue-rail">
+
                                     <div class="color-hue-thumb"></div>
+
                                 </div>
+
                                 <div class="color-input-wrapper">
+
                                     <span class="color-hash">#</span>
+
                                     <input type="text" class="color-hex-input" value="${currentVal.replace('#','')}" oninput="updateColorFromInput(this)">
+                                    <div class="color-rgb-toggle" onclick="toggleRgbCycle(this)" title="RGB Cycle"><span class="rgb-box"></span><span class="rgb-label">RGB</span></div>
+
                                 </div>
+
                             </div>
+
                         </div>`;
+
                     }
+
                     html += `${tipMarkup}</div>`;
+
                 });
+
                 html += `</div>`;
+
             });
+
             html += `</div>`;
+
             return html;
+
         }
+
         let lipHideTimer = null;
 
+
+
         function resetLipTimer() {
+
             const notch = document.getElementById('toggleNotch');
+
             const tabview = document.getElementById('tabview');
+
             notch.classList.remove('idle-vanish');
+
             clearTimeout(lipHideTimer);
+
             if (tabview.classList.contains('collapsed')) {
+
                 lipHideTimer = setTimeout(() => {
+
                     notch.classList.add('idle-vanish');
+
                 }, 5000);
+
             }
+
         }
+
+
 
         function init() {
+
             applyTheme();
+
             const tabview = document.getElementById('tabview');
+
             const toggleNotch = document.getElementById('toggleNotch');
+
             const tabs = Array.from(document.querySelectorAll('.tab'));
+
             const tabsContainer = document.getElementById('tabs');
+
             const panel = document.getElementById('panel');
+
             const injector = document.getElementById('contentInject');
+
             const tabCount = tabs.length;
+
             tabsContainer.setAttribute('data-count', tabCount);
+
             if (tabCount) {
+
                 const tabStyles = getComputedStyle(tabsContainer);
+
                 const padTop = parseFloat(tabStyles.paddingTop) || 0;
+
                 const padBottom = parseFloat(tabStyles.paddingBottom) || 0;
+
                 let maxH = 0;
+
                 tabs.forEach(tab => {
+
                     maxH = Math.max(maxH, tab.offsetHeight || 0);
+
                 });
+
                 if (maxH) {
+
                     tabsContainer.style.height = `${maxH + padTop + padBottom}px`;
+
                 }
+
                 tabs.forEach((tab, idx) => {
+
                     const pos = ((idx + 1) / (tabCount + 1)) * 100;
+
                     tab.style.left = `${pos}%`;
+
                 });
+
             }
+
             const initialTab = document.querySelector('.tab.active');
+
             const initialKey = initialTab.getAttribute('data-tab');
+
             injector.innerHTML = buildPanel(initialKey);
+
             setTimeout(() => {
+
                 panel.classList.add('active');
+
                 try {
+
                     __orionPositionNotifyStack();
+
                 } catch {}
+
             }, 100);
+
             toggleNotch.addEventListener('click', () => {
+
                 tabview.classList.toggle('collapsed');
+
                 resetLipTimer();
+
                 __orionPositionNotifyStack();
+
             });
+
             [toggleNotch, tabview].forEach(el => {
+
                 el.addEventListener('mouseenter', resetLipTimer);
+
                 el.addEventListener('mouseleave', resetLipTimer);
+
             });
+
             tabs.forEach((tab, index) => {
+
                 tab.addEventListener('click', () => {
+
                     if (index === currentTabIndex) return;
+
                     const slideOutDir = index > currentTabIndex ? 'left' : 'right';
+
                     const slideInDir = index > currentTabIndex ? 'right' : 'left';
+
                     const key = tab.getAttribute('data-tab');
+
                     tabs.forEach(t => {
+
                         t.classList.remove('active');
+
                     });
+
                     tab.classList.add('active');
+
                     panel.className = 'content-panel slide-out-' + slideOutDir;
+
                     setTimeout(() => {
+
                         injector.innerHTML = buildPanel(key);
+
                         injector.scrollTop = 0;
+
                         panel.className = 'content-panel slide-in-' + slideInDir;
+
                         setTimeout(() => {
+
                             panel.className = 'content-panel active';
+
                             try {
+
                                 __orionPositionNotifyStack();
+
                             } catch {}
+
                         }, 50);
+
                         currentTabIndex = index;
+
                     }, 350);
+
                 });
+
             });
+
         }
+
         if (document.readyState === 'loading') {
+
             document.addEventListener('DOMContentLoaded', init);
+
         } else {
+
             init();
+
         }
+
     </script>
+
 </body>
 
+
+
 </html>
+
