@@ -1179,15 +1179,19 @@
     <div class="tabview-container" id="tabview">
         <div class="tabs" id="tabs">
             <div class="tab active" data-tab="tab1">
+                <i class="ph ph-house"></i>
+                <span class="tooltip">Home</span>
+            </div>
+            <div class="tab" data-tab="tab2">
                 <i class="ph ph-user-focus"></i>
                 <span class="tooltip">Dashboard</span>
             </div>
-            <div class="tab" data-tab="tab2">
-                <i class="fa-brands fa-buffer"></i>
+            <div class="tab" data-tab="tab3">
+                <i class="ph ph-tree-structure"></i>
                 <span class="tooltip">Manager</span>
             </div>
-            <div class="tab" data-tab="tab3">
-                <i class="fa-solid fa-user-gear"></i>
+            <div class="tab" data-tab="tab4">
+                <i class="ph ph-faders"></i>
                 <span class="tooltip">Settings</span>
             </div>
         </div>
@@ -1599,14 +1603,18 @@
 
         const TAB_DATA = {
             tab1: {
-                title: 'Dashboard',
+                title: 'Home',
                 grid: []
             },
             tab2: {
-                title: 'Manager',
+                title: 'Dashboard',
                 grid: []
             },
             tab3: {
+                title: 'Manager',
+                grid: []
+            },
+            tab4: {
                 title: 'Settings',
                 grid: [{
                     header: 'Application',
