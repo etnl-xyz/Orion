@@ -563,7 +563,42 @@
         .color-hash { color: var(--text-sub); font-size: 14px; font-weight: bold; }
         .color-hex-input { background: transparent; border: none; color: var(--text-color); width: 100%; font-family: var(--font-family); font-size: 13px; outline: none; text-transform: uppercase; letter-spacing: 1px; }
 
-        #overlay-root {
+        .color-hex-input { flex: 1; min-width: 0; }
+
+        
+        .color-rgb-toggle {
+            width: 18px;
+            height: 18px;
+            padding: 0;
+            border: 1px solid var(--secondary);
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: transparent;
+            transition: 0.2s;
+            flex: 0 0 auto;
+        }
+        .color-rgb-toggle .rgb-box {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            border: 1px solid var(--secondary);
+            background: linear-gradient(90deg, rgba(255,59,59,0.6), rgba(255,159,26,0.6), rgba(255,230,0,0.6), rgba(46,204,113,0.6), rgba(58,160,255,0.6), rgba(106,92,255,0.6), rgba(176,72,255,0.6), rgba(255,91,214,0.6));
+        }
+        .color-rgb-toggle:hover {
+            border-color: var(--text-sub);
+        }
+        .color-rgb-toggle.on {
+            border-color: var(--text-color);
+            box-shadow: 0 0 8px rgba(255,255,255,0.15);
+        }
+        .color-rgb-toggle.on .rgb-box {
+            border-color: transparent;
+            background: linear-gradient(90deg, #ff3b3b, #ff9f1a, #ffe600, #2ecc71, #3aa0ff, #6a5cff, #b048ff, #ff5bd6);
+        }
+#overlay-root {
             position: fixed;
             inset: 0;
             pointer-events: none;
@@ -1174,7 +1209,7 @@
             tab1: {
                 title: 'Obfuscator',
                 grid: [
-                    {header:'Base Config',span:'blob',controls:[
+                    {header:'Config',span:'fill',controls:[
                         { ui:'iconpanel',label:'Options',
                             count:3,
                             buttons: [
@@ -1184,26 +1219,28 @@
                             ]
                         },
                         { ui:'divider'},
-                        { ui:'toggle', label:'Umbra Banner', flag:'umbra_banner'}, 
+                        { ui:'toggle', label:'Oneline', flag:'oneline_output'},
                         { ui:'toggle', label:'Minify', flag:'minification'}, 
                         { ui:'toggle', label:'Beautify', flag:'beautify'}, 
-                        { ui:'toggle', label:'Oneline Output', flag:'oneline_output'}, 
+                        { ui:'toggle', label:'Umbra Banner', flag:'umbra_banner'}, 
+                        { ui:'divider'},
+                        { ui:'toggle', label:'Variable Renaming', flag:'variable_renaming'}, 
+                        { ui:'toggle', label:'Identifier Renaming', flag:'identifier_renaming'}, 
+                        { ui:'toggle', label:'Function Renaming', flag:'function_renaming'},
+                        { ui:'divider'},
                         { ui:'toggle', label:'String Encryption', flag:'string_encryption'}, 
                         { ui:'toggle', label:'AST Transformation', flag:'ast_transform'}, 
                         { ui:'toggle', label:'Function Splitting', flag:'function_splitting'},
-                        { ui:'toggle', label:'Identifier Renaming', flag:'identifier_renaming'}, 
-                        { ui:'toggle', label:'Function Renaming', flag:'function_renaming'},
                         { ui:'toggle', label:'Dead Code Insertion', flag:'dead_code'}, 
                         { ui:'toggle', label:'Control Flow Flattening', flag:'control_flow_flatten'}, 
-                        { ui:'toggle', label:'Opcode Substitution', flag:'opcode_substitution'},
                         { ui:'toggle', label:'Runtime ENV Checks', flag:'runtime_env_checks'},
-                    ]},
-                    {header:'Advanced Options',span:'blob',controls:[
+                        { ui:'divider'},
                         { ui:'toggle', label:'VME', flag:'vme'},
                         { ui:'toggle', label:'Dynamic Codegen', flag:'dynamic_codegen'},
+                        { ui:'toggle', label:'Opcode Substitution', flag:'opcode_substitution'},
                         { ui:'toggle', label:'Bytecode Manipulation', flag:'bytecode_manipulation'},
                     ]},
-                    {header:'Input',span:'hhalf',controls:[
+                    {header:'Input',span:'fill',controls:[
                         { ui:'iconpanel',label:'Options',
                             count:4,
                             buttons: [
@@ -1220,7 +1257,7 @@
                         ]},
                         { ui:'divider'},
                     ]},
-                    {header:'Output',span:'hhalf',controls:[
+                    {header:'Output',span:'fill',controls:[
                         { ui:'iconpanel',label:'Options',
                             count:3,
                             buttons: [
@@ -1409,6 +1446,73 @@
             }
             return { h, s, v };
         }
+        
+        
+        const RGB_CYCLE_PERIOD = 7000;
+        const RGB_CYCLE_SEND_MS = 120;
+        const __rgbCycleMap = new WeakMap();
+
+        function rgbFromSine(t) {
+            const r = Math.sin(t) * 0.5 + 0.5;
+            const g = Math.sin(t + (2 * Math.PI / 3)) * 0.5 + 0.5;
+            const b = Math.sin(t + (4 * Math.PI / 3)) * 0.5 + 0.5;
+            return {
+                r: Math.round(r * 255),
+                g: Math.round(g * 255),
+                b: Math.round(b * 255)
+            };
+        }
+
+        function stopRgbCycle(container, keepToggle) {
+            if (!container) return;
+            const state = __rgbCycleMap.get(container);
+            if (state && state.raf) {
+                cancelAnimationFrame(state.raf);
+            }
+            __rgbCycleMap.delete(container);
+            if (!keepToggle) {
+                const toggle = container.querySelector('.color-rgb-toggle');
+                if (toggle) toggle.classList.remove('on');
+            }
+        }
+
+        function startRgbCycle(container) {
+            if (!container) return;
+            stopRgbCycle(container, true);
+            const state = { start: performance.now(), lastSend: 0, raf: 0 };
+
+            const tick = (now) => {
+                const elapsed = now - state.start;
+                const t = (elapsed / RGB_CYCLE_PERIOD) * Math.PI * 2;
+                const rgb = rgbFromSine(t);
+                const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+                const hsv = hexToHsv(hex);
+                updateColorUIFromHSV(container, hsv.h, hsv.s, hsv.v);
+
+                if (now - state.lastSend >= RGB_CYCLE_SEND_MS) {
+                    state.lastSend = now;
+                    const flag = container.dataset.flag;
+                    if (flag) updateBackend(flag, hex);
+                }
+
+                state.raf = requestAnimationFrame(tick);
+            };
+
+            state.raf = requestAnimationFrame(tick);
+            __rgbCycleMap.set(container, state);
+        }
+
+        function toggleRgbCycle(el) {
+            const container = el.closest('.color-container');
+            if (!container) return;
+            const isOn = el.classList.toggle('on');
+            if (isOn) {
+                startRgbCycle(container);
+            } else {
+                stopRgbCycle(container);
+            }
+        }
+
         function toggleColorPicker(el) {
             const container = el.parentElement;
             const controlItem = container.closest('.control-item');
@@ -1429,6 +1533,7 @@
             }
         }
         function handleColorDrag(e, container, type) {
+            stopRgbCycle(container);
             const field = container.querySelector('.color-field');
             const hueRail = container.querySelector('.color-hue-rail');
             const rect = (type === 'field' ? field : hueRail).getBoundingClientRect();
@@ -1492,6 +1597,7 @@
             if (/^#[0-9A-F]{6}$/i.test(val)) {
                 const hsv = hexToHsv(val);
                 const container = input.closest('.color-container');
+                stopRgbCycle(container);
                 updateColorUIFromHSV(container, hsv.h, hsv.s, hsv.v);
                 const flag = container.dataset.flag;
                 updateBackend(flag, val.toUpperCase());
@@ -1574,6 +1680,7 @@
         function closeAllPopovers() {
             document.querySelectorAll('.dropdown-container.open, .color-container.open').forEach(d => {
                 d.classList.remove('open');
+                if (d.classList.contains('color-container')) stopRgbCycle(d);
                 const trigger = d.querySelector('.dropdown-selected, .color-trigger');
                 if(trigger) trigger.classList.remove('active');
                 
@@ -2059,6 +2166,7 @@
                         <div class="color-input-wrapper">
                             <span class="color-hash">#</span>
                             <input type="text" class="color-hex-input" value="${currentVal.replace('#','')}" oninput="updateColorFromInput(this)">
+                                    <div class="color-rgb-toggle" onclick="toggleRgbCycle(this)" title="RGB Cycle"><span class="rgb-box"></span></div>
                         </div>
                     </div>
                 </div>`;
