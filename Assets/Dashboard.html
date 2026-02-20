@@ -563,165 +563,251 @@
         .color-hash { color: var(--text-sub); font-size: 14px; font-weight: bold; }
         .color-hex-input { background: transparent; border: none; color: var(--text-color); width: 100%; font-family: var(--font-family); font-size: 13px; outline: none; text-transform: uppercase; letter-spacing: 1px; }
 
-        #overlay-root {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 10000;
-        }
+        .color-hex-input { flex: 1; min-width: 0; }
 
         
-        .orion-notify-stack {
-            position: fixed;
-            width: min(360px, calc(100vw - (var(--notify-edge) + var(--notify-edge))));
-            max-width: calc(100vw - (var(--notify-edge) + var(--notify-edge)));
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            pointer-events: none;
-            z-index: 10001;
-        }
-        .orion-notify {
-            pointer-events: auto;
-            position: relative;
-            --notify-accent: color-mix(in srgb, var(--secondary), #fff 10%);
-            background: var(--tab-bg);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            box-shadow: 0 18px 50px rgba(0,0,0,0.55);
-            padding: 14px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            animation: orionNotifyIn 0.18s ease-out;
-        }
-        .orion-notify::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 12px;
-            bottom: 12px;
-            width: 2px;
-            border-radius: 999px;
-            background: linear-gradient(180deg, transparent, var(--notify-accent), transparent);
-            opacity: 0.95;
-            box-shadow: 0 0 16px color-mix(in srgb, var(--notify-accent), transparent 35%);
-        }
-        .orion-notify[data-variant="good"] { --notify-accent: #3AD98A; }
-        .orion-notify[data-variant="bad"] { --notify-accent: #D96A6A; }
-        .orion-notify[data-variant="warn"] { --notify-accent: #D9B45A; }
-
-        .orion-notify-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 14px;
-        }
-        .orion-notify-head-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
-        .orion-notify-icon {
-            width: 30px;
-            height: 30px;
-            display: grid;
-            place-items: center;
-            flex-shrink: 0;
-            color: var(--notify-accent);
-            filter: drop-shadow(0 0 10px color-mix(in srgb, var(--notify-accent), transparent 40%));
-            opacity: 0.95;
-            margin-top: -1px;
-        }
-        .orion-notify-icon i { font-size: 1.05em; }
-        @keyframes orionNotifyIn {
-            from { transform: translateY(-6px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .orion-notify-title {
-            font-size: 12px;
-            font-weight: 500;
-            letter-spacing: 1.6px;
-            text-transform: uppercase;
-            color: var(--text-color);
-            line-height: 1.2;
-        }
-        .orion-notify-sub {
-            font-size: 12px;
-            color: var(--text-sub);
-            line-height: 1.25;
-        }
-        .orion-notify-body {
-            font-size: 12px;
-            color: var(--text-color);
-            line-height: 1.45;
-            white-space: pre-wrap;
-        }
-        .orion-notify-meta {
-            display: flex;
-            justify-content: space-between;
+        .color-rgb-toggle {
+            width: 18px;
+            height: 18px;
+            padding: 0;
+            border: 1px solid var(--secondary);
+            border-radius: 4px;
+            display: inline-flex;
             align-items: center;
-            gap: 12px;
-            color: var(--text-sub);
-            font-size: 12px;
-        }
-        .orion-notify-timer {
-            font-variant-numeric: tabular-nums;
-            letter-spacing: 1px;
-            color: var(--text-color);
-        }
-        .orion-notify-progress {
-            height: 2px;
-            width: 100%;
-            background: rgba(255,255,255,0.08);
-            border-radius: 999px;
-            overflow: hidden;
-        }
-        .orion-notify-progress > div {
-            height: 100%;
-            width: 0%;
-            background: var(--notify-accent);
-            box-shadow: 0 0 10px color-mix(in srgb, var(--notify-accent), transparent 55%);
-            transition: width 0.25s linear;
-        }
-        .orion-notify-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            padding-top: 2px;
-        }
-        .orion-notify-btn {
-            background: var(--input-bg);
-            border: 1px solid rgba(255,255,255,0.10);
-            border-radius: 6px;
-            padding: 7px 12px;
-            color: var(--text-color);
-            font-family: var(--font-family);
-            font-size: 11px;
+            justify-content: center;
             cursor: pointer;
+            background: transparent;
             transition: 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            flex: 0 0 auto;
         }
-        .orion-notify-btn:hover {
-            background: var(--tab-hover);
-            border-color: rgba(255,255,255,0.16);
+        .color-rgb-toggle .rgb-box {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            border: 1px solid var(--secondary);
+            background: linear-gradient(90deg, rgba(255,59,59,0.6), rgba(255,159,26,0.6), rgba(255,230,0,0.6), rgba(46,204,113,0.6), rgba(58,160,255,0.6), rgba(106,92,255,0.6), rgba(176,72,255,0.6), rgba(255,91,214,0.6));
         }
-        .orion-notify-btn.primary {
+        .color-rgb-toggle:hover {
+            border-color: var(--text-sub);
+        }
+        .color-rgb-toggle.on {
             border-color: var(--text-color);
+            box-shadow: 0 0 8px rgba(255,255,255,0.15);
         }
-        body.Glassmorphism-active .orion-notify,
-        body.Glassmorphism-active .orion-notify-btn {
-            backdrop-filter: blur(10px) saturate(160%) !important;
-            -webkit-backdrop-filter: blur(10px) saturate(160%) !important;
+        .color-rgb-toggle.on .rgb-box {
+            border-color: transparent;
+            background: linear-gradient(90deg, #ff3b3b, #ff9f1a, #ffe600, #2ecc71, #3aa0ff, #6a5cff, #b048ff, #ff5bd6);
         }
-        body.Glassmorphism-active .orion-notify {
-            background: color-mix(in srgb, var(--tab-bg), transparent 10%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        }
-        body.Glassmorphism-active .orion-notify-btn {
-            background: color-mix(in srgb, var(--input-bg), transparent 30%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.10) !important;
-        }
-        body.Glow-active .orion-notify {
-            box-shadow: 0 0 var(--glow-spread) var(--glow-color), 0 18px 50px rgba(0,0,0,0.55);
-        }
+#overlay-root {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10000;
+}
+
+.orion-notify-stack {
+    position: fixed;
+    width: min(380px, calc(100vw - (var(--notify-edge) + var(--notify-edge))));
+    max-width: calc(100vw - (var(--notify-edge) + var(--notify-edge)));
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+    z-index: 10001;
+    isolation: isolate;
+}
+
+.orion-notify {
+    pointer-events: auto;
+    position: relative;
+    overflow: hidden;
+    --notify-accent: color-mix(in srgb, var(--secondary), #fff 16%);
+    --notify-surface: color-mix(in srgb, var(--panel-bg), var(--tab-bg) 58%);
+    background:
+        radial-gradient(130% 100% at 100% 0%, color-mix(in srgb, var(--notify-accent), transparent 92%) 0%, transparent 60%),
+        linear-gradient(165deg, color-mix(in srgb, var(--notify-surface), #fff 4%) 0%, color-mix(in srgb, var(--notify-surface), #000 8%) 100%);
+    border: 1px solid color-mix(in srgb, var(--text-color), transparent 83%);
+    border-radius: 14px;
+    box-shadow: 0 16px 42px rgba(0, 0, 0, 0.50), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: orionNotifyIn 0.2s cubic-bezier(0.2, 0.85, 0.25, 1);
+}
+
+.orion-notify::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    width: 3px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--notify-accent), #fff 10%) 25%, var(--notify-accent) 50%, color-mix(in srgb, var(--notify-accent), #fff 10%) 75%, transparent 100%);
+    opacity: 0.95;
+    box-shadow: 0 0 18px color-mix(in srgb, var(--notify-accent), transparent 34%);
+}
+
+.orion-notify::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 38%);
+    opacity: 0.8;
+}
+
+.orion-notify[data-variant="good"] { --notify-accent: #3ad98a; }
+.orion-notify[data-variant="bad"] { --notify-accent: #d96a6a; }
+.orion-notify[data-variant="warn"] { --notify-accent: #d9b45a; }
+
+.orion-notify-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.orion-notify-head-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.orion-notify-icon {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: var(--notify-accent);
+    filter: drop-shadow(0 0 12px color-mix(in srgb, var(--notify-accent), transparent 45%));
+    opacity: 0.98;
+    margin-top: -1px;
+}
+
+.orion-notify-icon i { font-size: 1.05em; }
+
+@keyframes orionNotifyIn {
+    from {
+        transform: translateY(-8px) scale(0.985);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.orion-notify-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-color);
+    line-height: 1.2;
+}
+
+.orion-notify-sub {
+    font-size: 11px;
+    color: var(--text-sub);
+    line-height: 1.35;
+}
+
+.orion-notify-body {
+    font-size: 12px;
+    color: var(--text-color);
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+.orion-notify-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-sub);
+    font-size: 11px;
+}
+
+.orion-notify-timer {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.8px;
+    color: var(--text-color);
+}
+
+.orion-notify-progress {
+    height: 3px;
+    width: 100%;
+    background: color-mix(in srgb, var(--text-color), transparent 90%);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.orion-notify-progress > div {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--notify-accent), #fff 16%), var(--notify-accent));
+    box-shadow: 0 0 12px color-mix(in srgb, var(--notify-accent), transparent 52%);
+    transition: width 0.25s linear;
+}
+
+.orion-notify-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 2px;
+}
+
+.orion-notify-btn {
+    background: color-mix(in srgb, var(--input-bg), #fff 2%);
+    border: 1px solid color-mix(in srgb, var(--text-color), transparent 86%);
+    border-radius: 7px;
+    padding: 7px 12px;
+    color: var(--text-color);
+    font-family: var(--font-family);
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.orion-notify-btn:hover {
+    background: color-mix(in srgb, var(--tab-hover), #fff 6%);
+    border-color: color-mix(in srgb, var(--text-color), transparent 74%);
+    transform: translateY(-1px);
+}
+
+.orion-notify-btn.primary {
+    border-color: color-mix(in srgb, var(--notify-accent), transparent 42%);
+    background: color-mix(in srgb, var(--notify-accent), transparent 86%);
+}
+
+body.Glassmorphism-active .orion-notify,
+body.Glassmorphism-active .orion-notify-btn {
+    backdrop-filter: blur(10px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(160%) !important;
+}
+
+body.Glassmorphism-active .orion-notify {
+    background: color-mix(in srgb, var(--tab-bg), transparent 22%) !important;
+    border: 1px solid color-mix(in srgb, var(--text-color), transparent 82%) !important;
+}
+
+body.Glassmorphism-active .orion-notify-btn {
+    background: color-mix(in srgb, var(--input-bg), transparent 44%) !important;
+    border: 1px solid color-mix(in srgb, var(--text-color), transparent 86%) !important;
+}
+
+body.Glow-active .orion-notify {
+    box-shadow: 0 0 var(--glow-spread) color-mix(in srgb, var(--glow-color), transparent 30%), 0 16px 42px rgba(0, 0, 0, 0.50), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
     </style>
 </head>
 <body>
@@ -788,103 +874,133 @@
             return t.slice(0, Math.max(0, maxLen - 1)) + '…';
         }
         function __orionFormatTime(totalSeconds) {
-            const s = Math.max(0, Math.floor(Number(totalSeconds) || 0));
-            const m = Math.floor(s / 60);
-            const r = s % 60;
-            return `${m}:${String(r).padStart(2, '0')}`;
+    const s = Math.max(0, Math.floor(Number(totalSeconds) || 0));
+    const m = Math.floor(s / 60);
+    const r = s % 60;
+    return `${m}:${String(r).padStart(2, '0')}`;
+}
+
+function __orionGetStableRect(el) {
+    if (!el) return null;
+    const width = Math.max(0, el.offsetWidth || el.clientWidth || 0);
+    const height = Math.max(0, el.offsetHeight || el.clientHeight || 0);
+    let left = 0;
+    let top = 0;
+    let node = el;
+    while (node) {
+        left += node.offsetLeft || 0;
+        top += node.offsetTop || 0;
+        node = node.offsetParent;
+    }
+    return {
+        top,
+        left,
+        right: left + width,
+        bottom: top + height,
+        width,
+        height
+    };
+}
+
+function __orionPositionNotifyStack(stack) {
+    try {
+        const scrollArea = document.getElementById('contentInject');
+        if (scrollArea) {
+            const visibleH = Math.max(0, Math.floor(scrollArea.clientHeight || scrollArea.offsetHeight || 0));
+            const vhalf = Math.max(220, Math.floor((visibleH - 20) / 2));
+            document.documentElement.style.setProperty('--subpanel-vhalf', `${vhalf}px`);
         }
-        function __orionPositionNotifyStack(stack) {
-            try {
-                const scrollArea = document.getElementById('contentInject');
-                if (scrollArea) {
-                    const rr = scrollArea.getBoundingClientRect();
-                    const visibleH = Math.max(0, Math.floor(rr.height || 0));
-                    const vhalf = Math.max(220, Math.floor((visibleH - 20) / 2));
-                    document.documentElement.style.setProperty('--subpanel-vhalf', `${vhalf}px`);
-                }
-            } catch {}
+    } catch {}
 
-            const s = stack || document.getElementById('orion-notify-stack');
-            if (!s) return;
+    const s = stack || document.getElementById('orion-notify-stack');
+    if (!s) return;
 
-            const loc = String((UI_CONFIG && UI_CONFIG.NotificationLocation) || 'Top').toLowerCase();
+    const loc = String((UI_CONFIG && UI_CONFIG.NotificationLocation) || 'Top').toLowerCase();
 
-            s.style.top = '';
-            s.style.bottom = '';
-            s.style.left = '';
-            s.style.right = '';
-            s.style.transform = '';
+    s.style.top = '';
+    s.style.bottom = '';
+    s.style.left = '';
+    s.style.right = '';
+    s.style.transform = '';
 
-            const edge = 'var(--notify-edge)';
-            const edge2 = '(var(--notify-edge) + var(--notify-edge))';
+    const edge = 'var(--notify-edge)';
+    const edge2 = '(var(--notify-edge) + var(--notify-edge))';
 
-            let panelRect = null;
-            try {
-                const panel = document.getElementById('panel');
-                if (panel) panelRect = panel.getBoundingClientRect();
-            } catch {}
-            if (!panelRect) {
-                panelRect = { top: 0, left: 0, right: window.innerWidth, bottom: window.innerHeight, width: window.innerWidth, height: window.innerHeight };
-            }
+    let panelRect = null;
+    try {
+        const panel = document.getElementById('panel');
+        panelRect = __orionGetStableRect(panel);
+    } catch {}
 
-            const w = Math.max(0, Math.floor(panelRect.width || 0));
-            const h = Math.max(0, Math.floor(panelRect.height || 0));
-            const leftGap = Math.max(0, Math.floor(panelRect.left || 0));
-            const topGap = Math.max(0, Math.floor(panelRect.top || 0));
-            const rightGap = Math.max(0, Math.floor((window.innerWidth || 0) - (panelRect.right || 0)));
-            const bottomGap = Math.max(0, Math.floor((window.innerHeight || 0) - (panelRect.bottom || 0)));
+    if (!panelRect || panelRect.width <= 0 || panelRect.height <= 0) {
+        panelRect = {
+            top: 0,
+            left: 0,
+            right: window.innerWidth,
+            bottom: window.innerHeight,
+            width: window.innerWidth,
+            height: window.innerHeight
+        };
+    }
 
-            s.style.width = `min(360px, calc(${w}px - ${edge2}))`;
-            s.style.maxWidth = `calc(${w}px - ${edge2})`;
-            s.style.maxHeight = `calc(${h}px - ${edge2})`;
+    const w = Math.max(0, Math.floor(panelRect.width || 0));
+    const h = Math.max(0, Math.floor(panelRect.height || 0));
+    const leftGap = Math.max(0, Math.floor(panelRect.left || 0));
+    const topGap = Math.max(0, Math.floor(panelRect.top || 0));
+    const rightGap = Math.max(0, Math.floor((window.innerWidth || 0) - (panelRect.right || 0)));
+    const bottomGap = Math.max(0, Math.floor((window.innerHeight || 0) - (panelRect.bottom || 0)));
 
-            const topExpr = `calc(${topGap}px + ${edge})`;
-            const leftExpr = `calc(${leftGap}px + ${edge})`;
-            const rightExpr = `calc(${rightGap}px + ${edge})`;
-            const bottomExpr = `calc(${bottomGap}px + ${edge})`;
+    s.style.width = `min(380px, calc(${w}px - ${edge2}))`;
+    s.style.maxWidth = `calc(${w}px - ${edge2})`;
+    s.style.maxHeight = `calc(${h}px - ${edge2})`;
 
-            const centerX = Math.round((panelRect.left || 0) + (panelRect.width || 0) / 2);
-            const centerY = Math.round((panelRect.top || 0) + (panelRect.height || 0) / 2);
+    const topExpr = `calc(${topGap}px + ${edge})`;
+    const leftExpr = `calc(${leftGap}px + ${edge})`;
+    const rightExpr = `calc(${rightGap}px + ${edge})`;
+    const bottomExpr = `calc(${bottomGap}px + ${edge})`;
 
-            switch (loc) {
-                case 'top':
-                case 'top center':
-                    s.style.top = topExpr;
-                    s.style.left = `${centerX}px`;
-                    s.style.transform = 'translateX(-50%)';
-                    break;
-                case 'top right':
-                    s.style.top = topExpr;
-                    s.style.right = rightExpr;
-                    break;
-                case 'center':
-                case 'middle':
-                    s.style.top = `${centerY}px`;
-                    s.style.left = `${centerX}px`;
-                    s.style.transform = 'translate(-50%, -50%)';
-                    break;
-                case 'bottom':
-                case 'bottom center':
-                    s.style.bottom = bottomExpr;
-                    s.style.left = `${centerX}px`;
-                    s.style.transform = 'translateX(-50%)';
-                    break;
-                case 'bottom left':
-                    s.style.bottom = bottomExpr;
-                    s.style.left = leftExpr;
-                    break;
-                case 'bottom right':
-                    s.style.bottom = bottomExpr;
-                    s.style.right = rightExpr;
-                    break;
-                case 'top left':
-                default:
-                    s.style.top = topExpr;
-                    s.style.left = leftExpr;
-                    break;
-            }
-        }
-        function __orionEnsureNotifyStack() {
+    const centerX = Math.round((panelRect.left || 0) + (panelRect.width || 0) / 2);
+    const centerY = Math.round((panelRect.top || 0) + (panelRect.height || 0) / 2);
+
+    switch (loc) {
+        case 'top':
+        case 'top center':
+            s.style.top = topExpr;
+            s.style.left = `${centerX}px`;
+            s.style.transform = 'translateX(-50%)';
+            break;
+        case 'top right':
+            s.style.top = topExpr;
+            s.style.right = rightExpr;
+            break;
+        case 'center':
+        case 'middle':
+            s.style.top = `${centerY}px`;
+            s.style.left = `${centerX}px`;
+            s.style.transform = 'translate(-50%, -50%)';
+            break;
+        case 'bottom':
+        case 'bottom center':
+            s.style.bottom = bottomExpr;
+            s.style.left = `${centerX}px`;
+            s.style.transform = 'translateX(-50%)';
+            break;
+        case 'bottom left':
+            s.style.bottom = bottomExpr;
+            s.style.left = leftExpr;
+            break;
+        case 'bottom right':
+            s.style.bottom = bottomExpr;
+            s.style.right = rightExpr;
+            break;
+        case 'top left':
+        default:
+            s.style.top = topExpr;
+            s.style.left = leftExpr;
+            break;
+    }
+}
+function __orionEnsureNotifyStack() {
             const overlayRoot = document.getElementById('overlay-root');
             if (!overlayRoot) return null;
             let stack = document.getElementById('orion-notify-stack');
@@ -1358,6 +1474,73 @@
             }
             return { h, s, v };
         }
+        
+        
+        const RGB_CYCLE_PERIOD = 7000;
+        const RGB_CYCLE_SEND_MS = 120;
+        const __rgbCycleMap = new WeakMap();
+
+        function rgbFromSine(t) {
+            const r = Math.sin(t) * 0.5 + 0.5;
+            const g = Math.sin(t + (2 * Math.PI / 3)) * 0.5 + 0.5;
+            const b = Math.sin(t + (4 * Math.PI / 3)) * 0.5 + 0.5;
+            return {
+                r: Math.round(r * 255),
+                g: Math.round(g * 255),
+                b: Math.round(b * 255)
+            };
+        }
+
+        function stopRgbCycle(container, keepToggle) {
+            if (!container) return;
+            const state = __rgbCycleMap.get(container);
+            if (state && state.raf) {
+                cancelAnimationFrame(state.raf);
+            }
+            __rgbCycleMap.delete(container);
+            if (!keepToggle) {
+                const toggle = container.querySelector('.color-rgb-toggle');
+                if (toggle) toggle.classList.remove('on');
+            }
+        }
+
+        function startRgbCycle(container) {
+            if (!container) return;
+            stopRgbCycle(container, true);
+            const state = { start: performance.now(), lastSend: 0, raf: 0 };
+
+            const tick = (now) => {
+                const elapsed = now - state.start;
+                const t = (elapsed / RGB_CYCLE_PERIOD) * Math.PI * 2;
+                const rgb = rgbFromSine(t);
+                const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+                const hsv = hexToHsv(hex);
+                updateColorUIFromHSV(container, hsv.h, hsv.s, hsv.v);
+
+                if (now - state.lastSend >= RGB_CYCLE_SEND_MS) {
+                    state.lastSend = now;
+                    const flag = container.dataset.flag;
+                    if (flag) updateBackend(flag, hex);
+                }
+
+                state.raf = requestAnimationFrame(tick);
+            };
+
+            state.raf = requestAnimationFrame(tick);
+            __rgbCycleMap.set(container, state);
+        }
+
+        function toggleRgbCycle(el) {
+            const container = el.closest('.color-container');
+            if (!container) return;
+            const isOn = el.classList.toggle('on');
+            if (isOn) {
+                startRgbCycle(container);
+            } else {
+                stopRgbCycle(container);
+            }
+        }
+
         function toggleColorPicker(el) {
             const container = el.parentElement;
             const controlItem = container.closest('.control-item');
@@ -1378,6 +1561,7 @@
             }
         }
         function handleColorDrag(e, container, type) {
+            stopRgbCycle(container);
             const field = container.querySelector('.color-field');
             const hueRail = container.querySelector('.color-hue-rail');
             const rect = (type === 'field' ? field : hueRail).getBoundingClientRect();
@@ -1441,6 +1625,7 @@
             if (/^#[0-9A-F]{6}$/i.test(val)) {
                 const hsv = hexToHsv(val);
                 const container = input.closest('.color-container');
+                stopRgbCycle(container);
                 updateColorUIFromHSV(container, hsv.h, hsv.s, hsv.v);
                 const flag = container.dataset.flag;
                 updateBackend(flag, val.toUpperCase());
@@ -1523,6 +1708,7 @@
         function closeAllPopovers() {
             document.querySelectorAll('.dropdown-container.open, .color-container.open').forEach(d => {
                 d.classList.remove('open');
+                if (d.classList.contains('color-container')) stopRgbCycle(d);
                 const trigger = d.querySelector('.dropdown-selected, .color-trigger');
                 if(trigger) trigger.classList.remove('active');
                 
@@ -1973,6 +2159,7 @@
                         <div class="color-input-wrapper">
                             <span class="color-hash">#</span>
                             <input type="text" class="color-hex-input" value="${currentVal.replace('#','')}" oninput="updateColorFromInput(this)">
+                                    <div class="color-rgb-toggle" onclick="toggleRgbCycle(this)" title="RGB Cycle"><span class="rgb-box"></span></div>
                         </div>
                     </div>
                 </div>`;
