@@ -693,10 +693,14 @@
     filter: none;
     opacity: 0.95;
     margin-top: -1px;
-    transition: filter 0.2s ease, opacity 0.2s ease;
+    transition: opacity 0.2s ease;
 }
 
-.orion-notify-icon i { font-size: 1.05em; }
+.orion-notify-icon i {
+    font-size: 1.05em;
+    color: inherit;
+    transition: filter 0.2s ease;
+}
 
 @keyframes orionNotifyIn {
     from {
@@ -822,8 +826,11 @@ body.Glow-active .orion-notify {
 }
 
 body.Glow-active .orion-notify-icon {
-    filter: drop-shadow(0 0 6px currentColor) drop-shadow(0 0 14px currentColor);
     opacity: 1;
+}
+
+body.Glow-active .orion-notify-icon i {
+    filter: drop-shadow(0 0 6px currentColor) drop-shadow(0 0 14px currentColor);
 }
     </style>
 </head>
@@ -2290,3 +2297,4 @@ function __orionEnsureNotifyStack() {
     
 </body>
 </html>
+
