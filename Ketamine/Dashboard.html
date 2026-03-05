@@ -453,6 +453,16 @@
             resize: none;
         }
         .canvas-textarea:focus { border-color: var(--text-sub); background: var(--tab-hover); }
+        .canvas-textarea.monaco-bound { display: none; }
+        .canvas-monaco-host {
+            flex: 1;
+            width: 100%;
+            min-height: 220px;
+            border: 1px solid var(--secondary);
+            border-radius: 6px;
+            overflow: hidden;
+            background: #1e1e1e;
+        }
         .canvas-panel[data-type="text"] { min-height: 240px; }
 
         
@@ -865,7 +875,6 @@ body.Glow-active .orion-notify-icon i {
 
         const SERVER_CONFIG = %%CLIENT_DATA%% || {
             "ScriptBuffer": "-- Ketamine Executor",
-            "TargetProcess": "RobloxPlayerBeta.exe",
             "AutoAttach": true,
             "ProcessProgress": 0,
             "AttachProgress": 0,
@@ -1314,7 +1323,7 @@ body.Glow-active .orion-notify-icon i {
                         },
                         { ui:'divider'},
                         { ui:'canvaspanel', panels:[
-                            { type:'text', well:'fill', header:'Workspace', role:'script', flag:'ScriptBuffer', placeholder:'Paste Luau script here...' },
+                            { type:'text', well:'fill', header:'Workspace', role:'script', flag:'ScriptBuffer', placeholder:'Paste Luau script here...', monaco:true, language:'lua' },
                         ]},
                     ]},
                     {header:'Runtime',span:'hhalf',controls:[
@@ -1335,7 +1344,6 @@ body.Glow-active .orion-notify-icon i {
                     {header:'Session',span:'fill',controls:[
                         { ui:'progress', label:'Process Presence', min:0, max:100, precision:0, flag:'ProcessProgress'},
                         { ui:'progress', label:'Attachment', min:0, max:100, precision:0, flag:'AttachProgress'},
-                        { ui:'dropdown', label:'Target Process', type:'single', options: ["RobloxPlayerBeta.exe","Windows10Universal.exe","GameClient.exe"], flag:'TargetProcess'},
                         { ui:'toggle', label:'Auto Attach', flag:'AutoAttach'},
                         { ui:'divider'},
                         { ui:'button', label:'Inject', type:'single', text:'Inject', flag:'Inject'},
@@ -1434,6 +1442,7 @@ body.Glow-active .orion-notify-icon i {
             applyTheme();
             const activeTabKey = document.querySelector('.tab.active').getAttribute('data-tab');
             document.getElementById('contentInject').innerHTML = buildPanel(activeTabKey);
+            __orionMountMonaco(document.getElementById('contentInject'));
             document.title = "recv://" + JSON.stringify(DEFAULT_UI_CONFIG);
         }
         function handleButtonClick(el, flag) {
@@ -1936,6 +1945,8 @@ body.Glow-active .orion-notify-icon i {
             const panelRole = panel.role ?? panel.Role ?? panelId ?? '';
             const placeholder = panel.placeholder ?? panel.Placeholder ?? '';
             const readOnly = panel.readonly ?? panel.readOnly ?? panel.ReadOnly ?? false;
+            const useMonaco = panel.monaco ?? panel.Monaco ?? false;
+            const monacoLang = panel.language ?? panel.Language ?? panel.lang ?? panel.Lang ?? 'lua';
             const buttons = panel.buttons ?? panel.Buttons ?? panel.tools ?? panel.Tools ?? [];
 
             if (flag) {
@@ -1977,6 +1988,7 @@ body.Glow-active .orion-notify-icon i {
                 if (flag) dataAttrs += ` data-flag="${flag}"`;
                 if (panelRole) dataAttrs += ` data-canvas-role="${panelRole}" data-role="${panelRole}"`;
                 if (panelId) dataAttrs += ` data-canvas-id="${panelId}"`;
+                if (useMonaco) dataAttrs += ` data-monaco="1" data-monaco-lang="${escapeHtml(monacoLang)}"`;
                 html += `<textarea class="canvas-textarea"${dataAttrs}${roAttr} placeholder="${escapeHtml(placeholder)}" oninput="handleCanvasTextInput(this)">${safeVal}</textarea>`;
             }
 
@@ -2013,10 +2025,117 @@ body.Glow-active .orion-notify-icon i {
                 `.canvas-textarea[data-canvas-role="${target}"], .canvas-textarea[data-canvas-id="${target}"], .canvas-textarea[data-role="${target}"]`
             ));
         }
+        const __orionMonacoState = { loading:false, loaded:false, editors:new Map() };
+        function __orionMonacoGetEditor(el) {
+            const state = __orionMonacoState.editors.get(el);
+            return state ? state.editor : null;
+        }
+        function __orionMonacoSetValue(el, value, silent = false) {
+            const editor = __orionMonacoGetEditor(el);
+            if (!editor) return;
+            const next = String(value ?? '');
+            if (editor.getValue() === next) return;
+            if (silent) {
+                const state = __orionMonacoState.editors.get(el);
+                if (state) state.silent = true;
+            }
+            editor.setValue(next);
+        }
+        function __orionMonacoGetValue(el) {
+            const editor = __orionMonacoGetEditor(el);
+            if (editor) return editor.getValue();
+            return el.value || '';
+        }
+        function __orionMonacoDisposeDetached() {
+            __orionMonacoState.editors.forEach((state, textarea) => {
+                if (document.body.contains(textarea)) return;
+                try { state.editor.dispose(); } catch {}
+                __orionMonacoState.editors.delete(textarea);
+            });
+        }
+        function __orionEnsureMonaco(cb) {
+            if (window.monaco && window.require) {
+                __orionMonacoState.loaded = true;
+                cb();
+                return;
+            }
+            if (__orionMonacoState.loading) {
+                const wait = setInterval(() => {
+                    if (!__orionMonacoState.loaded) return;
+                    clearInterval(wait);
+                    cb();
+                }, 50);
+                return;
+            }
+            __orionMonacoState.loading = true;
+            const existing = document.querySelector('script[data-monaco-loader="1"]');
+            const onLoaded = () => {
+                if (!window.require) return;
+                window.require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.43.0/min/vs' } });
+                __orionMonacoState.loaded = true;
+                __orionMonacoState.loading = false;
+                cb();
+            };
+            if (existing) {
+                const wait = setInterval(() => {
+                    if (!window.require) return;
+                    clearInterval(wait);
+                    onLoaded();
+                }, 50);
+                return;
+            }
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.43.0/min/vs/loader.min.js';
+            script.async = true;
+            script.dataset.monacoLoader = '1';
+            script.onload = onLoaded;
+            script.onerror = () => { __orionMonacoState.loading = false; };
+            document.head.appendChild(script);
+        }
+        function __orionMountMonaco(root = document) {
+            __orionMonacoDisposeDetached();
+            const list = Array.from(root.querySelectorAll('.canvas-textarea[data-monaco="1"]'));
+            if (!list.length) return;
+            __orionEnsureMonaco(() => {
+                if (!window.monaco || !window.require) return;
+                window.require(['vs/editor/editor.main'], () => {
+                    list.forEach(textarea => {
+                        if (__orionMonacoState.editors.has(textarea)) return;
+                        const host = document.createElement('div');
+                        host.className = 'canvas-monaco-host';
+                        textarea.classList.add('monaco-bound');
+                        textarea.parentNode.insertBefore(host, textarea.nextSibling);
+                        const editor = monaco.editor.create(host, {
+                            value: textarea.value || '',
+                            language: textarea.dataset.monacoLang || 'lua',
+                            theme: 'vs-dark',
+                            automaticLayout: true,
+                            minimap: { enabled: false },
+                            fontSize: 13,
+                            fontFamily: 'Consolas, monospace',
+                            roundedSelection: true,
+                            readOnly: textarea.hasAttribute('readonly'),
+                            scrollbar: { vertical: 'hidden', horizontal: 'hidden' }
+                        });
+                        const state = { editor, silent:false };
+                        __orionMonacoState.editors.set(textarea, state);
+                        editor.onDidChangeModelContent(() => {
+                            if (state.silent) {
+                                state.silent = false;
+                                return;
+                            }
+                            textarea.value = editor.getValue();
+                            handleCanvasTextInput(textarea);
+                        });
+                    });
+                });
+            });
+        }
         function clearCanvasByTarget(target) {
             const nodes = findCanvasTextareas(target);
             nodes.forEach(el => {
                 el.value = '';
+                __orionMonacoSetValue(el, '', true);
                 const flag = el.dataset.flag;
                 if (flag) updateBackend(flag, '');
             });
@@ -2025,7 +2144,7 @@ body.Glow-active .orion-notify-icon i {
             const nodes = findCanvasTextareas(target);
             if (!nodes.length) return;
             const el = nodes[0];
-            const text = el.value || '';
+            const text = __orionMonacoGetValue(el);
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(text).catch(() => {});
                 return;
@@ -2043,6 +2162,7 @@ body.Glow-active .orion-notify-icon i {
             if (navigator.clipboard && navigator.clipboard.readText) {
                 navigator.clipboard.readText().then(text => {
                     el.value = text;
+                    __orionMonacoSetValue(el, text, true);
                     const flag = el.dataset.flag;
                     if (flag) updateBackend(flag, text);
                 }).catch(() => {});
@@ -2052,6 +2172,7 @@ body.Glow-active .orion-notify-icon i {
             const nodes = findCanvasTextareas(target);
             nodes.forEach(el => {
                 el.value = value ?? '';
+                __orionMonacoSetValue(el, value ?? '', true);
             });
             if (flag) {
                 SERVER_CONFIG[flag] = value;
@@ -2091,9 +2212,6 @@ body.Glow-active .orion-notify-icon i {
             }
             if (typeof data.RuntimeLog === 'string') {
                 __orionSetCanvasText('runtime', data.RuntimeLog, 'RuntimeLog');
-            }
-            if (typeof data.TargetProcess === 'string') {
-                __orionSetDropdown('TargetProcess', data.TargetProcess);
             }
         }
         window.__orionSetCanvasText = __orionSetCanvasText;
@@ -2287,6 +2405,7 @@ body.Glow-active .orion-notify-icon i {
             const initialTab = document.querySelector('.tab.active');
             const initialKey = initialTab.getAttribute('data-tab');
             injector.innerHTML = buildPanel(initialKey);
+            __orionMountMonaco(injector);
             setTimeout(() => {
                 panel.classList.add('active');
                 try { __orionPositionNotifyStack(); } catch {}
@@ -2312,10 +2431,11 @@ body.Glow-active .orion-notify-icon i {
                     tabs.forEach(t => { t.classList.remove('active'); });
                     tab.classList.add('active');
                     panel.className = 'content-panel slide-out-' + slideOutDir;
-                    setTimeout(() => {
-                        injector.innerHTML = buildPanel(key);
-                        injector.scrollTop = 0;
-                        panel.className = 'content-panel slide-in-' + slideInDir;
+                        setTimeout(() => {
+                            injector.innerHTML = buildPanel(key);
+                            __orionMountMonaco(injector);
+                            injector.scrollTop = 0;
+                            panel.className = 'content-panel slide-in-' + slideInDir;
                         setTimeout(() => {
                             panel.className = 'content-panel active';
                             try { __orionPositionNotifyStack(); } catch {}
